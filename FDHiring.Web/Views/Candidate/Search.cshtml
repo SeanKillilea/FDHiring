@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Search";
+}
+
+@section Toolbar {
+    <div class="content-toolbar">
+        <form class="form" data-search-form>
+            <div class="input-group has-icon">
+                <svg><use href="#icon-search"></use></svg>
+                <input type="text" class="input min-w-200" placeholder="Search by name..." data-search-name />
+            </div>
+
+            <select class="select min-w-200" data-search-position>
+                <option value="">All Positions</option>
+            </select>
+
+            <label class="checkbox">
+                <input type="checkbox" data-search-current />
+                <span>Current</span>
+            </label>
+
+            <label class="checkbox">
+                <input type="checkbox" data-search-active />
+                <span>Active</span>
+            </label>
+
+            <button type="button" class="btn btn-primary" data-search-clear>Clear Filters</button>
+
+            <div class="results-count" data-search-results>
+                <span data-search-showing>0</span>
+                of
+                <span data-search-total>0</span>
+                candidates
+            </div>
+        </form>
+    </div>
+}
+
+<div class="list" data-candidate-results>
+    <p>Search page loaded successfully.</p>
+</div>

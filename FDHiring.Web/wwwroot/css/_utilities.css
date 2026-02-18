@@ -1,0 +1,93 @@
+/* healper utilities */
+.hidden {
+   display: none !important;
+}
+
+/* gap utilities */
+.gap-sm {
+   gap: var(--space-sm);
+}
+
+.gap-md {
+   gap: var(--space-md);
+}
+
+.gap-lg {
+   gap: var(--space-lg);
+}
+
+/* width utilities */
+.min-w-300 {
+   min-width: 300px;
+}
+
+.min-w-100p {
+   min-width: 100%;
+}
+
+.min-w-200 {
+   min-width: 200px;
+}
+
+.min-w-120 {
+   min-width: 120px;
+}
+
+/* text utilities */
+.upper {
+   text-transform: uppercase;
+}
+
+/* padding utilities */
+
+.pad-sm {
+   padding: var(--space-sm);
+}
+.pad-bot-sm {
+   padding-bottom: var(--space-sm);
+}
+
+/* margin utilities */
+.m-top-sm {
+   margin-top: var(--space-sm);
+}
+
+.m-right-sm {
+   margin-right: var(--space-sm);
+}
+
+.nowrap {
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+}
+
+::-webkit-scrollbar {
+   width: var(--space-md);
+   height: var(--space-md);
+}
+
+::-webkit-scrollbar-track {
+   background: var(--bg-elevated);
+}
+
+::-webkit-scrollbar-thumb {
+   background: var(--clr-border);
+   border-radius: var(--space-xxs);
+   cursor: pointer;
+}
+
+::-webkit-scrollbar-thumb:hover {
+   background: var(--clr-elevated);
+   cursor: pointer;
+}
+
+textarea::-webkit-resizer {
+   background-color: var(--clr-border);
+   background-image: none;
+}
+
+/* Firefox */
+textarea {
+   scrollbar-color: var(--clr-border) var(--clr-primary);
+}

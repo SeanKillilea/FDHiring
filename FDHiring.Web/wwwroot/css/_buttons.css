@@ -1,0 +1,107 @@
+.btn {
+   position: relative;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-size: var(--font-sm);
+   font-weight: 600;
+   font-family: inherit;
+   text-transform: uppercase;
+   border: 1px solid transparent;
+   border-radius: var(--space-xs);
+   cursor: pointer;
+   white-space: nowrap;
+   text-decoration: none;
+   color: inherit;
+   background-color: inherit;
+   font-size: var(--font-xxs);
+   color: var(--text-secondary);
+}
+
+.btn * {
+   pointer-events: none;
+}
+
+.btn:active {
+   transform: translateY(1px);
+}
+
+.btn.action {
+   padding: var(--space-xs);
+   background-color: var(--clr-elevated);
+   border: 2px solid transparent;
+   min-width: 29.4px;
+}
+
+.btn.action:not(:disabled):hover {
+   color: var(--text-primary);
+   background-color: var(--text-placeholder);
+   border: 2px solid var(--text-primary);
+}
+
+.btn.action.active {
+   background-color: var(--text-placeholder);
+   border-color: var(--text-primary);
+}
+
+.btn.action:disabled {
+   color: var(--text-placeholder);
+   background-color: var(--clr-elevated);
+   border-color: var(--clr-border);
+   cursor: not-allowed;
+   opacity: 0.5; /* Optional: make it look more disabled */
+}
+
+.btn.btn-primary {
+   padding: var(--space-xs) var(--space-sm);
+   background-color: var(--clr-accent-blue);
+   color: white;
+   border: 1px solid var(--clr-border);
+   border-radius: var(--space-xs);
+   font-size: var(--font-xs);
+   font-family: inherit;
+}
+
+.btn.btn-primary:hover {
+   background-color: var(--clr-accent-blue-hover);
+}
+
+.btn.btn-primary:active {
+   background-color: var(--clr-accent-blue-active);
+}
+
+.btn.btn-secondary {
+   padding: var(--space-xs) var(--space-sm);
+   background-color: var(--clr-elevated);
+   color: var(--text-primary);
+   border: 1px solid var(--clr-border);
+   border-radius: var(--space-xs);
+   font-size: var(--font-xs);
+   font-family: inherit;
+}
+
+.btn.btn-danger {
+   padding: var(--space-xs) var(--space-sm);
+   background-color: transparent;
+   color: var(--clr-accent-red);
+   border: 1px solid var(--clr-accent-red);
+   border-radius: var(--space-xs);
+   font-size: var(--font-xs);
+   font-family: inherit;
+}
+
+.btn.btn-danger:hover {
+   background-color: var(--clr-accent-red);
+   color: white;
+}
+
+.btn.btn-danger:active {
+   filter: brightness(0.85);
+}
+
+svg {
+   pointer-events: none;
+   width: 18px;
+   height: 18px;
+   color: currentColor;
+}

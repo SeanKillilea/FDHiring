@@ -1,30 +1,49 @@
+using FDHiring.Data;
 using FDHiring.Data.Repositories;
-using FDHiring.Core.Interfaces;
-using Microsoft.Data.SqlClient;
-using System.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ============================================================
 // SERVICES
 // ============================================================
-
 builder.Services.AddControllersWithViews();
 
-// Database connection — Dapper uses IDbConnection directly
-builder.Services.AddScoped<IDbConnection>(sp =>
-    new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
+// WebOptimizer — bundle & minify CSS
+builder.Services.AddWebOptimizer(pipeline =>
+{
+    pipeline.AddCssBundle("/css/bundle.css",
+        "css/_vars.css",
+        "css/_reset.css",
+        "css/_layout.css",
+        "css/_candidate.css",
+        "css/_utilities.css",
+        "css/_buttons.css",
+        "css/_toast.css",
+        "css/_badges.css",
+        "css/_form.css",
+        "css/_modal.css");
+});
+
+// Database connection factory
+builder.Services.AddSingleton<DbConnectionFactory>();
 
 // Repositories
-builder.Services.AddScoped<ICandidateRepository, CandidateRepository>();
-builder.Services.AddScoped<IFileRepository, FileRepository>();
-builder.Services.AddScoped<IWorkflowRepository, WorkflowRepository>();
-builder.Services.AddScoped<IInterviewRepository, InterviewRepository>();
+builder.Services.AddScoped<CandidateRepository>();
+builder.Services.AddScoped<PositionRepository>();
+builder.Services.AddScoped<AgencyRepository>();
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<WorkflowRepository>();
+builder.Services.AddScoped<WorkflowStepRepository>();
+builder.Services.AddScoped<WorkflowHistoryRepository>();
+builder.Services.AddScoped<InterviewRepository>();
+builder.Services.AddScoped<InterviewQuestionRepository>();
+builder.Services.AddScoped<InterviewAnswerRepository>();
+builder.Services.AddScoped<CandidateFileRepository>();
+builder.Services.AddScoped<EmailTemplateRepository>();
 
 // ============================================================
 // PIPELINE
 // ============================================================
-
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -32,6 +51,7 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Candidate/Error");
 }
 
+app.UseWebOptimizer();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();

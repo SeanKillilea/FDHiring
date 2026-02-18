@@ -1,0 +1,152 @@
+body {
+   font-family: 'Inter', sans-serif;
+   background: var(--clr-primary);
+   color: var(--text-primary);
+   font-size: var(--font-md);
+   line-height: 1.4;
+   overflow: clip;
+}
+
+.app-container {
+   display: flex;
+   flex-direction: column;
+   min-height: 100vh;
+}
+
+header {
+   position: sticky;
+   top: 0;
+   height: var(--header-height);
+   display: flex;
+   gap: var(--space-xl);
+   background: var(--clr-secondary);
+   border-bottom: 1px solid var(--clr-border);
+   z-index: 100;
+}
+
+.header-left,
+.header-center,
+.header-right {
+   display: flex;
+   align-items: flex-start;
+}
+
+.header-left {
+   flex-direction: column;
+   justify-content: flex-start;
+   padding-top: var(--space-md);
+   padding-left: var(--space-md);
+}
+
+.header-center {
+   padding-left: 5rem;
+   flex: 1;
+   align-items: center;
+}
+
+.header-right {
+   padding-right: var(--space-xl);
+   justify-content: flex-end;
+   align-items: center;
+}
+
+.app-logo {
+   display: flex;
+   align-items: center;
+   gap: var(--space-md);
+   font-weight: 800;
+   font-size: var(--font-lg);
+   text-transform: uppercase;
+}
+
+.page-title {
+   font-weight: 400;
+   font-size: var(--font-xs);
+   color: var(--text-secondary);
+}
+
+.page-action-message {
+   padding-top: var(--space-sm);
+   font-size: var(--font-xxs);
+   color: var(--text-secondary);
+   text-transform: uppercase;
+   opacity: 0;
+   transition: opacity 0.3s ease;
+}
+
+.page-action-message.visible {
+   opacity: 1;
+}
+
+main {
+   display: flex;
+   flex: 1;
+   overflow: visible;
+}
+
+aside {
+   position: sticky;
+   top: var(--header-height);
+   display: flex;
+   align-self: flex-start;
+   flex-direction: column;
+   background: var(--clr-secondary);
+   padding: var(--space-lg);
+   height: calc(100vh - var(--header-height));
+   z-index: 50;
+}
+
+.side-action-buttons {
+   position: relative;
+   display: flex;
+   flex-direction: column;
+   gap: var(--space-xl);
+   padding-top: 4rem;
+   flex: 1;
+}
+
+.side-setting-buttions {
+   display: flex;
+   flex-direction: column;
+   flex: 0;
+   gap: var(--space-xl);
+   padding-bottom: var(--space-lg);
+}
+
+.content-area {
+   flex: 1;
+   display: flex;
+   flex-direction: column;
+   background: var(--clr-primary);
+   overflow-y: auto;
+   height: calc(100vh - var(--header-height));
+}
+
+.content-toolbar {
+   position: sticky;
+   top: 0;
+   background: var(--clr-secondary);
+   padding: var(--space-md);
+   display: flex;
+   align-items: center;
+   gap: var(--space-md);
+   justify-content: flex-start;
+   z-index: 40;
+}
+
+.content-body {
+   flex: 1;
+   padding: var(--space-md);
+   border-top: 1px solid var(--clr-border);
+   border-left: 1px solid var(--clr-border);
+}
+
+footer {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   padding: var(--space-xs);
+   background: var(--clr-secondary);
+   border-top: 1px solid var(--clr-border);
+   background: var(--clr-accent-blue);
+}
