@@ -1,5 +1,20 @@
-﻿@{
+﻿@using FDHiring.Core.Models
+@{
     ViewData["Title"] = "Search";
+    var positions = (IEnumerable<Position>)ViewBag.Positions;
+    var users = (IEnumerable<User>)ViewBag.Users;
+}
+
+@section HeaderRight {
+    <div class="input-group">
+        <label for="user-login" class="input-label">User:</label>
+        <select id="user-login" class="select min-w-120" data-user-login>
+            @foreach (var user in users)
+            {
+                <option value="@user.Id" @(user.Id == (int)(ViewBag.CurrentUserId ?? 0) ? "selected" : "")>@user.FirstName @user.LastName</option>
+            }
+        </select>
+    </div>
 }
 
 @section Toolbar {
@@ -12,6 +27,10 @@
 
             <select class="select min-w-200" data-search-position>
                 <option value="">All Positions</option>
+                @foreach (var position in positions)
+                {
+                    <option value="@position.Id">@position.Name</option>
+                }
             </select>
 
             <label class="checkbox">
@@ -39,3 +58,7 @@
 <div class="list" data-candidate-results>
     <p>Search page loaded successfully.</p>
 </div>
+
+@section Scripts {
+    <script src="~/js/candidate-search.js"></script>
+}

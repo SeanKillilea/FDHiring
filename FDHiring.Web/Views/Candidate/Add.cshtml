@@ -1,5 +1,10 @@
-﻿@{
+﻿@using FDHiring.Core.Models
+@{
     ViewData["Title"] = "Add Candidate";
+    var positions = (IEnumerable<Position>)ViewBag.Positions;
+    var agencies = (IEnumerable<Agency>)ViewBag.Agencies;
 }
 
 <p>Add Candidate page</p>
+<p>Positions loaded: @positions.Count()</p>
+<p>Agencies loaded: @agencies.Count()</p>

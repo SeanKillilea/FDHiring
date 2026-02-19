@@ -24,6 +24,14 @@ builder.Services.AddWebOptimizer(pipeline =>
         "css/_modal.css");
 });
 
+// Session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(8);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // Database connection factory
 builder.Services.AddSingleton<DbConnectionFactory>();
 
@@ -54,6 +62,7 @@ if (!app.Environment.IsDevelopment())
 app.UseWebOptimizer();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(
