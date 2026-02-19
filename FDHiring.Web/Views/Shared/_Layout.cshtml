@@ -55,10 +55,13 @@
                     <a href="@Url.Action("Search", "Candidate")" class="btn action @(currentAction == "Search" ? "active" : "")" title="Search">
                         <svg><use href="#icon-search"></use></svg>
                     </a>
+                    <a href="@Url.Action("Index", "Dashboard")" class="btn action @(currentController == "Dashboard" ? "active" : "")" title="Dashboard">
+                        <svg><use href="#icon-dashboard"></use></svg>
+                    </a>
                     @if (hasCandidateId)
                     {
-                        <a href="@Url.Action("Index", "Dashboard")" class="btn action @(currentController == "Dashboard" ? "active" : "")" title="Dashboard">
-                            <svg><use href="#icon-dashboard"></use></svg>
+                        <a href="@Url.Action("Edit", "Candidate", new { id = candidateId })" class="btn action @(currentAction == "Edit" ? "active" : "")" title="Edit Candidate">
+                            <svg><use href="#icon-edit"></use></svg>
                         </a>
                         <a href="@Url.Action("Workflow", "Candidate", new { id = candidateId })" class="btn action @(currentAction == "Workflow" ? "active" : "")" title="Workflow">
                             <svg><use href="#icon-workflow"></use></svg>
@@ -75,8 +78,8 @@
                     }
                     else
                     {
-                        <span class="btn action disabled" title="Dashboard">
-                            <svg><use href="#icon-dashboard"></use></svg>
+                        <span class="btn action disabled" title="Edit Candidate">
+                            <svg><use href="#icon-edit"></use></svg>
                         </span>
                         <span class="btn action disabled" title="Workflow">
                             <svg><use href="#icon-workflow"></use></svg>
@@ -108,9 +111,26 @@
             </div>
         </main>
 
-
     </div>
 
+    <!-- Confirm Modal -->
+    <div class="modal-overlay hidden" data-confirm-modal>
+        <div class="modal">
+            <div class="modal-header">
+                <h2 data-confirm-modal-title>Are you sure?</h2>
+            </div>
+            <div class="modal-body">
+                <p data-confirm-modal-message></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary m-right-sm" data-confirm-modal-cancel>Cancel</button>
+                <button class="btn btn-danger" data-confirm-modal-confirm>Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/toast.js"></script>
+    <script src="/js/confirm.js"></script>
     <script src="/js/candidate-header.js"></script>
     @RenderSection("Scripts", required: false)
 </body>

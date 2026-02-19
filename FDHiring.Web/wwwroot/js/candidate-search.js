@@ -156,7 +156,7 @@ function init() {
         if (disabledButtons.length === 0) return;
 
         const buttonConfig = [
-            { title: 'Dashboard', href: '/Dashboard/Index' },
+            { title: 'Edit Candidate', href: `/Candidate/Edit/${id}` },
             { title: 'Workflow', href: `/Candidate/Workflow/${id}` },
             { title: 'Interviews', href: `/Candidate/Interview/${id}` },
             { title: 'Files', href: `/Candidate/Files/${id}` },

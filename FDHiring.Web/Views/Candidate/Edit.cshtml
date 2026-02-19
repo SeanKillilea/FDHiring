@@ -1,5 +1,91 @@
-﻿@{
+﻿@using FDHiring.Core.Models
+@{
     ViewData["Title"] = "Edit Candidate";
+    var positions = (IEnumerable<Position>)ViewBag.Positions;
+    var agencies = (IEnumerable<Agency>)ViewBag.Agencies;
+    var candidateId = (int)ViewBag.CandidateId;
 }
 
-<p>Edit Candidate page</p>
+@section Toolbar {
+    <div class="content-toolbar"></div>
+}
+
+<form class="form edit-form" data-candidate-form data-candidate-id="@candidateId">
+    <div class="input-group form-row">
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName" name="firstName" class="input" />
+    </div>
+    <div class="input-group form-row">
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" name="lastName" class="input" />
+    </div>
+    <div class="input-group form-row">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" class="input" />
+    </div>
+    <div class="input-group form-row">
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" name="phone" class="input" />
+    </div>
+    <div class="input-group form-row">
+        <label for="linkedin">LinkedIn</label>
+        <input type="text" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/..." class="input" />
+    </div>
+    <div class="input-group form-row">
+        <label for="position">Position</label>
+        <select id="position" name="positionId" class="select">
+            <option value="">Select Position</option>
+            @foreach (var p in positions)
+            {
+                <option value="@p.Id">@p.Name</option>
+            }
+        </select>
+    </div>
+    <div class="input-group form-row">
+        <label for="agency">Agency</label>
+        <select id="agency" name="agencyId" class="select">
+            <option value="">Select Agency</option>
+            @foreach (var a in agencies)
+            {
+                <option value="@a.Id">@a.Name</option>
+            }
+        </select>
+    </div>
+    <div class="input-group form-row">
+        <label for="dateFound">Date Found</label>
+        <input type="date" id="dateFound" name="dateFound" class="input" />
+    </div>
+    <div class="input-group form-row">
+        <label for="notes">Notes</label>
+        <textarea id="notes" name="notes" class="textarea"></textarea>
+    </div>
+    <div class="input-group form-row">
+        <label class="checkbox">
+            <input type="checkbox" id="wouldHire" name="wouldHire" />
+            <span>Would Hire</span>
+        </label>
+    </div>
+    <div class="input-group form-row">
+        <label class="checkbox">
+            <input type="checkbox" id="isCurrent" name="isCurrent" />
+            <span>Current</span>
+        </label>
+    </div>
+    <div class="input-group form-row">
+        <label class="checkbox">
+            <input type="checkbox" id="active" name="active" />
+            <span>Active</span>
+        </label>
+    </div>
+    <div class="form-actions">
+        <button type="button" class="btn btn-danger" data-btn-delete>Delete Candidate</button>
+        <div class="form-actions-right">
+            <button type="button" class="btn btn-secondary" data-btn-cancel>Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/js/candidate-edit.js"></script>
+}

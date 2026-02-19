@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FDHiring.Core.Models;
 using FDHiring.Data.Repositories;
 using FDHiring.Web.Helpers;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FDHiring.Web.Controllers
 {
@@ -108,7 +109,24 @@ namespace FDHiring.Web.Controllers
             ViewData["Title"] = "Edit Candidate";
             ViewBag.Positions = await _positions.GetAllAsync();
             ViewBag.Agencies = await _agencies.GetAllAsync();
+            ViewBag.CandidateId = id;
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateCandidate([FromBody] Candidate candidate)
+        {
+            candidate.LastUpdatedByUserId = HttpContext.Session.GetUserId();
+            await _candidates.UpdateAsync(candidate);
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCandidate(int id)
+        {
+            await _candidates.DeleteAsync(id);
+            HttpContext.Session.SetCandidateId(0);
+            return Ok();
         }
 
         public IActionResult Workflow(int? id)
