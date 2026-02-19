@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="AppData\CandidateFiles\" />
     <Folder Include="Models\" />
   </ItemGroup>
 
