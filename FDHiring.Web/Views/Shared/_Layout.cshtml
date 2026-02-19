@@ -1,4 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@using FDHiring.Web.Helpers
+@{
+    var candidateId = Context.Session.GetCandidateId();
+    var hasCandidateId = candidateId > 0;
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -23,7 +30,14 @@
                 <div class="page-action-message" data-page-action></div>
             </div>
             <div class="header-center">
-                @RenderSection("HeaderCenter", required: false)
+                @if (IsSectionDefined("HeaderCenter"))
+                {
+                    @RenderSection("HeaderCenter", required: false)
+                }
+                else
+                {
+                    @await Html.PartialAsync("_CandidateHeader")
+                }
             </div>
             <div class="header-right">
                 @RenderSection("HeaderRight", required: false)
@@ -35,30 +49,51 @@
             <!-- SIDEBAR -->
             <aside>
                 <div class="side-action-buttons">
-                    <a href="@Url.Action("Add", "Candidate")" class="btn action" title="Add Candidate">
+                    <a href="@Url.Action("Add", "Candidate")" class="btn action @(currentAction == "Add" ? "active" : "")" title="Add Candidate">
                         <svg><use href="#icon-add"></use></svg>
                     </a>
-                    <a href="@Url.Action("Search", "Candidate")" class="btn action" title="Search">
+                    <a href="@Url.Action("Search", "Candidate")" class="btn action @(currentAction == "Search" ? "active" : "")" title="Search">
                         <svg><use href="#icon-search"></use></svg>
                     </a>
-                    <a href="@Url.Action("Index", "Dashboard")" class="btn action" title="Dashboard">
-                        <svg><use href="#icon-dashboard"></use></svg>
-                    </a>
-                    <a href="@Url.Action("Workflow", "Candidate")" class="btn action" title="Workflow">
-                        <svg><use href="#icon-workflow"></use></svg>
-                    </a>
-                    <a href="@Url.Action("Interview", "Candidate")" class="btn action" title="Interviews">
-                        <svg><use href="#icon-interview"></use></svg>
-                    </a>
-                    <a href="@Url.Action("Files", "Candidate")" class="btn action" title="Files">
-                        <svg><use href="#icon-files"></use></svg>
-                    </a>
-                    <a href="@Url.Action("Communicate", "Candidate")" class="btn action" title="Communicate">
-                        <svg><use href="#icon-communicate"></use></svg>
-                    </a>
+                    @if (hasCandidateId)
+                    {
+                        <a href="@Url.Action("Index", "Dashboard")" class="btn action @(currentController == "Dashboard" ? "active" : "")" title="Dashboard">
+                            <svg><use href="#icon-dashboard"></use></svg>
+                        </a>
+                        <a href="@Url.Action("Workflow", "Candidate", new { id = candidateId })" class="btn action @(currentAction == "Workflow" ? "active" : "")" title="Workflow">
+                            <svg><use href="#icon-workflow"></use></svg>
+                        </a>
+                        <a href="@Url.Action("Interview", "Candidate", new { id = candidateId })" class="btn action @(currentAction == "Interview" ? "active" : "")" title="Interviews">
+                            <svg><use href="#icon-interview"></use></svg>
+                        </a>
+                        <a href="@Url.Action("Files", "Candidate", new { id = candidateId })" class="btn action @(currentAction == "Files" ? "active" : "")" title="Files">
+                            <svg><use href="#icon-files"></use></svg>
+                        </a>
+                        <a href="@Url.Action("Communicate", "Candidate", new { id = candidateId })" class="btn action @(currentAction == "Communicate" ? "active" : "")" title="Communicate">
+                            <svg><use href="#icon-communicate"></use></svg>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="btn action disabled" title="Dashboard">
+                            <svg><use href="#icon-dashboard"></use></svg>
+                        </span>
+                        <span class="btn action disabled" title="Workflow">
+                            <svg><use href="#icon-workflow"></use></svg>
+                        </span>
+                        <span class="btn action disabled" title="Interviews">
+                            <svg><use href="#icon-interview"></use></svg>
+                        </span>
+                        <span class="btn action disabled" title="Files">
+                            <svg><use href="#icon-files"></use></svg>
+                        </span>
+                        <span class="btn action disabled" title="Communicate">
+                            <svg><use href="#icon-communicate"></use></svg>
+                        </span>
+                    }
                 </div>
                 <div class="side-setting-buttions">
-                    <a href="@Url.Action("Index", "Settings")" class="btn" title="Settings">
+                    <a href="@Url.Action("Index", "Settings")" class="btn @(currentController == "Settings" ? "active" : "")" title="Settings">
                         <svg><use href="#icon-settings"></use></svg>
                     </a>
                 </div>
@@ -73,13 +108,10 @@
             </div>
         </main>
 
-        <!-- FOOTER -->
-        <footer>
-            <span>&copy; @DateTime.Now.Year FreedomDev</span>
-        </footer>
 
     </div>
 
+    <script src="/js/candidate-header.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

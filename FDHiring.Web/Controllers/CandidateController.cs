@@ -23,6 +23,28 @@ namespace FDHiring.Web.Controllers
             _users = users;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetCandidate(int id)
+        {
+            var candidate = await _candidates.GetByIdAsync(id);
+            if (candidate == null) return NotFound();
+            return Json(candidate);
+        }
+
+        [HttpPost]
+        public IActionResult SetCandidate(int candidateId)
+        {
+            HttpContext.Session.SetCandidateId(candidateId);
+            return Ok();
+        }
+
+        [HttpPost]
+        public IActionResult SaveSearchState(string? name, int? positionId, bool current, bool active)
+        {
+            HttpContext.Session.SetSearchState(name, positionId, current, active);
+            return Ok();
+        }
+
         [HttpPost]
         public async Task<IActionResult> SetUser(int userId)
         {
@@ -34,12 +56,42 @@ namespace FDHiring.Web.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SearchCandidates(string? name, int? positionId, bool? current, bool? active)
+        {
+            var candidates = await _candidates.SearchAsync(name, positionId, current, active);
+            var total = await _candidates.GetCountAsync();
+            var results = candidates.ToList();
+
+            return Json(new { total, showing = results.Count, candidates = results });
+        }
+
         public async Task<IActionResult> Search()
         {
             ViewData["Title"] = "Search";
+
+            var users = await _users.GetActiveAsync();
+            var userId = HttpContext.Session.GetUserId();
+
+            // Auto-set first user if none in session
+            if (userId == 0 && users.Any())
+            {
+                var firstUser = users.First();
+                HttpContext.Session.SetUser(firstUser.Id, firstUser.FirstName, firstUser.LastName);
+                userId = firstUser.Id;
+            }
+
+            var searchState = HttpContext.Session.GetSearchState();
+
             ViewBag.Positions = await _positions.GetAllAsync();
-            ViewBag.Users = await _users.GetActiveAsync();
-            ViewBag.CurrentUserId = HttpContext.Session.GetUserId();
+            ViewBag.Users = users;
+            ViewBag.CurrentUserId = userId;
+            ViewBag.CurrentCandidateId = HttpContext.Session.GetCandidateId();
+            ViewBag.SearchName = searchState.name;
+            ViewBag.SearchPositionId = searchState.positionId;
+            ViewBag.SearchCurrent = searchState.current;
+            ViewBag.SearchActive = searchState.active;
+
             return View();
         }
 

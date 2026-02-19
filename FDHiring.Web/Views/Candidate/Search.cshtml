@@ -3,6 +3,33 @@
     ViewData["Title"] = "Search";
     var positions = (IEnumerable<Position>)ViewBag.Positions;
     var users = (IEnumerable<User>)ViewBag.Users;
+    var currentUserId = (int)(ViewBag.CurrentUserId ?? 0);
+    var searchName = (string)(ViewBag.SearchName ?? "");
+    var searchPositionId = (int)(ViewBag.SearchPositionId ?? 0);
+    var searchCurrent = (bool)(ViewBag.SearchCurrent ?? false);
+    var searchActive = (bool)(ViewBag.SearchActive ?? false);
+}
+
+@section HeaderCenter {
+    <div class="candidate-header hidden" data-candidate-header data-candidate-id="@ViewBag.CurrentCandidateId">
+        <div class="candidate-header-image">
+            <img class="search-bg" data-candidate-image src="" alt="Candidate Photo" />
+        </div>
+        <div class="candidate-header-meta">
+            <span class="candidate-name" data-candidate-name></span>
+            <span class="candidate-position" data-candidate-title></span>
+        </div>
+        <div class="candidate-header-status">
+            <span class="pill would-hire" data-pill-would-hire style="display: none">Would Hire</span>
+            <span class="pill current" data-pill-current style="display: none">Current</span>
+            <span class="pill active" data-pill-active style="display: none">Active</span>
+        </div>
+        <div class="candidate-header-actions">
+            <a href="@(ViewBag.CurrentCandidateId > 0 ? Url.Action("Edit", "Candidate", new { id = (int)ViewBag.CurrentCandidateId }) : "#")" class="btn" data-btn-edit data-tooltip="Edit Candidate">
+                <svg><use href="#icon-edit"></use></svg>
+            </a>
+        </div>
+    </div>
 }
 
 @section HeaderRight {
@@ -11,7 +38,7 @@
         <select id="user-login" class="select min-w-120" data-user-login>
             @foreach (var user in users)
             {
-                <option value="@user.Id" @(user.Id == (int)(ViewBag.CurrentUserId ?? 0) ? "selected" : "")>@user.FirstName @user.LastName</option>
+                <option value="@user.Id" @(user.Id == currentUserId ? "selected" : "")>@user.FirstName @user.LastName</option>
             }
         </select>
     </div>
@@ -22,29 +49,24 @@
         <form class="form" data-search-form>
             <div class="input-group has-icon">
                 <svg><use href="#icon-search"></use></svg>
-                <input type="text" class="input min-w-200" placeholder="Search by name..." data-search-name />
+                <input type="text" class="input min-w-200" placeholder="Search by name..." data-search-name value="@searchName" />
             </div>
-
             <select class="select min-w-200" data-search-position>
                 <option value="">All Positions</option>
                 @foreach (var position in positions)
                 {
-                    <option value="@position.Id">@position.Name</option>
+                    <option value="@position.Id" @(position.Id == searchPositionId ? "selected" : "")>@position.Name</option>
                 }
             </select>
-
             <label class="checkbox">
-                <input type="checkbox" data-search-current />
+                <input type="checkbox" data-search-current @(searchCurrent ? "checked" : "") />
                 <span>Current</span>
             </label>
-
             <label class="checkbox">
-                <input type="checkbox" data-search-active />
+                <input type="checkbox" data-search-active @(searchActive ? "checked" : "") />
                 <span>Active</span>
             </label>
-
             <button type="button" class="btn btn-primary" data-search-clear>Clear Filters</button>
-
             <div class="results-count" data-search-results>
                 <span data-search-showing>0</span>
                 of
@@ -55,8 +77,7 @@
     </div>
 }
 
-<div class="list" data-candidate-results>
-    <p>Search page loaded successfully.</p>
+<div class="list" data-candidate-results data-selected-candidate="@ViewBag.CurrentCandidateId">
 </div>
 
 @section Scripts {

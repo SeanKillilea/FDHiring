@@ -6,6 +6,10 @@
         public const string UserFirstName = "UserFirstName";
         public const string UserLastName = "UserLastName";
         public const string CandidateId = "CandidateId";
+        public const string SearchName = "SearchName";
+        public const string SearchPositionId = "SearchPositionId";
+        public const string SearchCurrent = "SearchCurrent";
+        public const string SearchActive = "SearchActive";
     }
 
     public static class SessionExtensions
@@ -37,6 +41,24 @@
         public static int GetCandidateId(this ISession session)
         {
             return session.GetInt32(SessionKeys.CandidateId) ?? 0;
+        }
+
+        public static void SetSearchState(this ISession session, string? name, int? positionId, bool current, bool active)
+        {
+            session.SetString(SessionKeys.SearchName, name ?? "");
+            session.SetInt32(SessionKeys.SearchPositionId, positionId ?? 0);
+            session.SetInt32(SessionKeys.SearchCurrent, current ? 1 : 0);
+            session.SetInt32(SessionKeys.SearchActive, active ? 1 : 0);
+        }
+
+        public static (string name, int positionId, bool current, bool active) GetSearchState(this ISession session)
+        {
+            return (
+                session.GetString(SessionKeys.SearchName) ?? "",
+                session.GetInt32(SessionKeys.SearchPositionId) ?? 0,
+                (session.GetInt32(SessionKeys.SearchCurrent) ?? 0) == 1,
+                (session.GetInt32(SessionKeys.SearchActive) ?? 0) == 1
+            );
         }
     }
 }

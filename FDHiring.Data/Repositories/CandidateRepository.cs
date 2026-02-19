@@ -46,11 +46,22 @@ namespace FDHiring.Data.Repositories
                 new { AgencyId = agencyId }, commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<IEnumerable<Candidate>> SearchAsync(string searchTerm)
+        public async Task<IEnumerable<Candidate>> SearchAsync(string? name, int? positionId, bool? current, bool? active)
         {
             using var conn = _db.CreateConnection();
-            return await conn.QueryAsync<Candidate>("SearchCandidates",
-                new { SearchTerm = searchTerm }, commandType: CommandType.StoredProcedure);
+            return await conn.QueryAsync<Candidate>("SearchCandidates", new
+            {
+                Name = string.IsNullOrWhiteSpace(name) ? null : name,
+                PositionId = positionId > 0 ? positionId : null,
+                IsCurrent = current == true ? (bool?)true : null,
+                Active = active == true ? (bool?)true : null
+            }, commandType: CommandType.StoredProcedure);
+        }
+
+        public async Task<int> GetCountAsync()
+        {
+            using var conn = _db.CreateConnection();
+            return await conn.ExecuteScalarAsync<int>("GetCandidateCount", commandType: CommandType.StoredProcedure);
         }
 
         public async Task<int> InsertAsync(Candidate c)

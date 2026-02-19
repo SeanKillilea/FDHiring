@@ -52,6 +52,11 @@
    opacity: 0.5; /* Optional: make it look more disabled */
 }
 
+.btn.action.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
 .btn.btn-primary {
    padding: var(--space-xs) var(--space-sm);
    background-color: var(--clr-accent-blue);

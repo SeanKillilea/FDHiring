@@ -1,0 +1,27 @@
+﻿@using FDHiring.Web.Helpers
+@{
+    var candidateId = Context.Session.GetCandidateId();
+}
+
+@if (candidateId > 0)
+{
+    <div class="candidate-header" data-candidate-header data-candidate-id="@candidateId">
+        <div class="candidate-header-image">
+            <img class="search-bg" data-candidate-image src="" alt="Candidate Photo" />
+        </div>
+        <div class="candidate-header-meta">
+            <span class="candidate-name" data-candidate-name></span>
+            <span class="candidate-position" data-candidate-title></span>
+        </div>
+        <div class="candidate-header-status">
+            <span class="pill would-hire" data-pill-would-hire style="display: none">Would Hire</span>
+            <span class="pill current" data-pill-current style="display: none">Current</span>
+            <span class="pill active" data-pill-active style="display: none">Active</span>
+        </div>
+        <div class="candidate-header-actions">
+            <a href="@Url.Action("Edit", "Candidate", new { id = candidateId })" class="btn" data-tooltip="Edit Candidate">
+                <svg><use href="#icon-edit"></use></svg>
+            </a>
+        </div>
+    </div>
+}
