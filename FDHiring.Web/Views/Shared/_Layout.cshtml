@@ -1,137 +1,120 @@
 ﻿@using FDHiring.Web.Helpers
-@{
-    var candidateId = Context.Session.GetCandidateId();
-    var hasCandidateId = candidateId > 0;
-    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
-    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
-}
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FD Hiring - @ViewData["Title"]</title>
-    <link rel="icon" href="data:," />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/css/bundle.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/style.css" />
+    @await RenderSectionAsync("Styles", required: false)
+    <script type="module" src="~/js/site.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    <title>@ViewData["Title"] — FDHiring</title>
 </head>
-<body>
+<body data-user-id="@Context.Session.GetUserId()">
+
     @await Html.PartialAsync("_IconSprite")
 
-    <div class="app-container">
-
-        <!-- HEADER -->
-        <header>
-            <div class="header-left">
-                <div class="app-logo">FD Hiring</div>
-                <div class="page-title">@ViewData["Title"]</div>
-                <div class="page-action-message" data-page-action></div>
-            </div>
-            <div class="header-center">
-                @if (IsSectionDefined("HeaderCenter"))
-                {
-                    @RenderSection("HeaderCenter", required: false)
-                }
-                else
-                {
-                    @await Html.PartialAsync("_CandidateHeader")
-                }
-            </div>
-            <div class="header-right">
-                @RenderSection("HeaderRight", required: false)
-            </div>
-        </header>
-
-        <!-- MAIN -->
-        <main>
-            <!-- SIDEBAR -->
-            <aside>
-                <div class="side-action-buttons">
-                    <a href="@Url.Action("Add", "Candidate")" class="btn action @(currentAction == "Add" ? "active" : "")" title="Add Candidate">
-                        <svg><use href="#icon-add"></use></svg>
-                    </a>
-                    <a href="@Url.Action("Search", "Candidate")" class="btn action @(currentAction == "Search" ? "active" : "")" title="Search">
-                        <svg><use href="#icon-search"></use></svg>
-                    </a>
-                    <a href="@Url.Action("Index", "Dashboard")" class="btn action @(currentController == "Dashboard" ? "active" : "")" title="Dashboard">
-                        <svg><use href="#icon-dashboard"></use></svg>
-                    </a>
-                    @if (hasCandidateId)
-                    {
-                        <a href="@Url.Action("Edit", "Candidate", new { id = candidateId })" class="btn action @(currentAction == "Edit" ? "active" : "")" title="Edit Candidate">
-                            <svg><use href="#icon-edit"></use></svg>
-                        </a>
-                        <a href="@Url.Action("Workflow", "Candidate", new { id = candidateId })" class="btn action @(currentAction == "Workflow" ? "active" : "")" title="Workflow">
-                            <svg><use href="#icon-workflow"></use></svg>
-                        </a>
-                        <a href="@Url.Action("Interview", "Candidate", new { id = candidateId })" class="btn action @(currentAction == "Interview" ? "active" : "")" title="Interviews">
-                            <svg><use href="#icon-interview"></use></svg>
-                        </a>
-                        <a href="@Url.Action("Files", "Candidate", new { id = candidateId })" class="btn action @(currentAction == "Files" ? "active" : "")" title="Files">
-                            <svg><use href="#icon-files"></use></svg>
-                        </a>
-                        <a href="@Url.Action("Communicate", "Candidate", new { id = candidateId })" class="btn action @(currentAction == "Communicate" ? "active" : "")" title="Communicate">
-                            <svg><use href="#icon-communicate"></use></svg>
-                        </a>
-                    }
-                    else
-                    {
-                        <span class="btn action disabled" title="Edit Candidate">
-                            <svg><use href="#icon-edit"></use></svg>
-                        </span>
-                        <span class="btn action disabled" title="Workflow">
-                            <svg><use href="#icon-workflow"></use></svg>
-                        </span>
-                        <span class="btn action disabled" title="Interviews">
-                            <svg><use href="#icon-interview"></use></svg>
-                        </span>
-                        <span class="btn action disabled" title="Files">
-                            <svg><use href="#icon-files"></use></svg>
-                        </span>
-                        <span class="btn action disabled" title="Communicate">
-                            <svg><use href="#icon-communicate"></use></svg>
-                        </span>
-                    }
+    <!-- ===== HEADER ===== -->
+    <header class="header" data-header>
+        <div class="header-row1" data-header-row1>
+            <a href="/" class="logo" data-logo>
+                <div class="logo-icon">
+                    <svg class="icon icon-sm"><use href="#icon-dashboard"></use></svg>
                 </div>
-                <div class="side-setting-buttions">
-                    <a href="@Url.Action("Index", "Settings")" class="btn @(currentController == "Settings" ? "active" : "")" title="Settings">
-                        <svg><use href="#icon-settings"></use></svg>
-                    </a>
-                </div>
-            </aside>
-
-            <!-- CONTENT -->
-            <div class="content-area">
-                @RenderSection("Toolbar", required: false)
-                <div class="content-body">
-                    @RenderBody()
-                </div>
+                <span>FDHiring</span>
+            </a>
+            <div class="search-wrapper" data-global-search>
+                <svg class="icon icon-sm search-icon"><use href="#icon-search"></use></svg>
+                <input class="search-input" type="text" placeholder="Search..." data-global-search-input />
             </div>
-        </main>
+            <div class="user-badge-header"
+                 data-user-badge
+                 title="@Context.Session.GetUserFullName()">
+                @Context.Session.GetUserInitials()
+            </div>
+        </div>
+        <nav class="header-row2" data-header-nav>
+            <a href="/Candidate/SetCandidate" class="nav-btn" data-nav="recommended">
+                <svg class="icon icon-sm"><use href="#icon-home"></use></svg>
+                No Candidate
+            </a>
+            <a href="/Candidate/SetCandidate?id=1" class="nav-btn" data-nav="trending">
+                <svg class="icon icon-sm"><use href="#icon-trending"></use></svg>
+                With Candidate
+            </a>
+            <a href="#" class="nav-btn" data-nav="upcoming">
+                <svg class="icon icon-sm"><use href="#icon-clock"></use></svg>
+                Upcoming
+            </a>
+            <a href="#" class="nav-btn" data-nav="new">
+                <svg class="icon icon-sm"><use href="#icon-new"></use></svg>
+                New
+            </a>
+            <a href="#" class="nav-btn" data-nav="popular">
+                <svg class="icon icon-sm"><use href="#icon-popular"></use></svg>
+                Popular
+            </a>
+        </nav>
+    </header>
 
-    </div>
+    <!-- ===== SIDEBAR ===== -->
+    @await Html.PartialAsync("_Sidebar")
 
-    <!-- Confirm Modal -->
-    <div class="modal-overlay hidden" data-confirm-modal>
-        <div class="modal">
+    <!-- ===== MAIN ===== -->
+    <main class="main" data-main>
+        <div class="main-inner" data-main-inner>
+            @RenderBody()
+        </div>
+    </main>
+
+    <!-- ===== SELECT USER MODAL ===== -->
+    <div class="modal-overlay" data-modal="select-user">
+        <div class="modal modal-sm">
             <div class="modal-header">
-                <h2 data-confirm-modal-title>Are you sure?</h2>
+                <div class="modal-title">Select User</div>
             </div>
             <div class="modal-body">
-                <p data-confirm-modal-message></p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary m-right-sm" data-confirm-modal-cancel>Cancel</button>
-                <button class="btn btn-danger" data-confirm-modal-confirm>Delete</button>
+                <div class="user-select-list" data-user-list></div>
             </div>
         </div>
     </div>
 
-    <script src="/js/toast.js"></script>
-    <script src="/js/confirm.js"></script>
-    <script src="/js/candidate-header.js"></script>
-    @RenderSection("Scripts", required: false)
+    <!-- ===== CONFIRM DELETE MODAL ===== -->
+    <div class="modal-overlay" data-modal="confirm-delete">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <div class="modal-title">Confirm Delete</div>
+                <button class="btn-icon" data-modal-close>
+                    <svg class="icon icon-sm"><use href="#icon-close"></use></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p data-confirm-message>Are you sure? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm" data-modal-close>Cancel</button>
+                <button class="btn btn-danger btn-sm" data-confirm-yes>
+                    <svg class="icon icon-sm"><use href="#icon-delete"></use></svg>
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast-container" data-toast-container></div>
+
+    @if (TempData["ToastMessage"] != null)
+    {
+        <script type="module">
+            import { showToast } from '/js/toast.js';
+            showToast('@TempData["ToastMessage"]', '@(TempData["ToastVariant"] ?? "success")');
+        </script>
+    }
+
 </body>
 </html>

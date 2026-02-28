@@ -1,126 +1,86 @@
-﻿if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-} else {
-    init();
-}
+﻿// candidate-edit.js — Validation + confirm delete
+import { showToast } from '/js/toast.js';
+import { confirmDelete } from '/js/confirm-modal.js';
 
-function init() {
-    const form = document.querySelector('[data-candidate-form]');
-    if (!form) return;
+const form = document.querySelector('[data-edit-form]');
+const deleteBtn = document.querySelector('[data-delete-candidate]');
 
-    const candidateId = form.dataset.candidateId;
-    const deleteBtn = form.querySelector('[data-btn-delete]');
-    const cancelBtn = form.querySelector('[data-btn-cancel]');
+// ───── FORM VALIDATION ─────
 
-    let currentCandidate = null;
+if (form) {
+    form.addEventListener('submit', (e) => {
+        // Clear previous error highlights
+        form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
 
-    // Load candidate data
-    loadCandidate(candidateId);
+        const errors = [];
 
-    // Save
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await saveCandidate(candidateId);
-    });
-
-    // Cancel
-    cancelBtn?.addEventListener('click', () => {
-        window.location.href = '/Candidate/Search';
-    });
-
-    // Delete
-    deleteBtn?.addEventListener('click', async () => {
-        const yes = await Confirm.show('Are you sure you want to delete this candidate? This cannot be undone.', {
-            title: 'Delete Candidate',
-            confirmText: 'Delete',
-            cancelText: 'Cancel'
+        // Check data-required fields
+        form.querySelectorAll('[data-required]').forEach(field => {
+            const val = field.value.trim();
+            if (!val) {
+                errors.push(field.dataset.required + ' is required');
+                field.classList.add('error');
+            }
         });
 
-        if (!yes) return;
-
-        try {
-            const res = await fetch('/Candidate/DeleteCandidate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `id=${candidateId}`
-            });
-
-            if (res.ok) {
-                Toast.success('Candidate deleted.');
-                setTimeout(() => {
-                    window.location.href = '/Candidate/Search';
-                }, 1000);
+        // Check email format
+        const emailField = form.querySelector('[data-email]');
+        if (emailField && emailField.value.trim()) {
+            const email = emailField.value.trim();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                errors.push('Email format is invalid');
+                emailField.classList.add('error');
             }
-        } catch (err) {
-            console.error('Delete failed:', err);
-            Toast.error('Failed to delete candidate.');
+        }
+
+        // Default date found to today if empty
+        const dateField = form.querySelector('#dateFound');
+        if (dateField && !dateField.value) {
+            dateField.value = new Date().toISOString().split('T')[0];
+        }
+
+        if (errors.length) {
+            e.preventDefault();
+            showToast(errors[0], 'warning');
+            // Focus first error field
+            const firstError = form.querySelector('.error');
+            if (firstError) firstError.focus();
+        }
+    });
+
+    // Clear error highlight on input
+    form.addEventListener('input', (e) => {
+        if (e.target.classList.contains('error')) {
+            e.target.classList.remove('error');
+        }
+    });
+
+    form.addEventListener('change', (e) => {
+        if (e.target.classList.contains('error')) {
+            e.target.classList.remove('error');
         }
     });
 }
 
-async function loadCandidate(id) {
-    try {
-        const res = await fetch(`/Candidate/GetCandidate?id=${id}`);
-        if (!res.ok) return;
+// ───── DELETE WITH CONFIRM MODAL ─────
 
-        const c = await res.json();
+if (deleteBtn) {
+    deleteBtn.addEventListener('click', async () => {
+        const ok = await confirmDelete('Delete this candidate? This action cannot be undone.');
+        if (!ok) return;
 
-        currentCandidate = c;
+        const id = deleteBtn.dataset.deleteId;
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = deleteBtn.dataset.deleteAction;
 
-        document.getElementById('firstName').value = c.firstName || '';
-        document.getElementById('lastName').value = c.lastName || '';
-        document.getElementById('email').value = c.email || '';
-        document.getElementById('phone').value = c.phone || '';
-        document.getElementById('linkedin').value = c.linkedIn || '';
-        document.getElementById('position').value = c.positionId || '';
-        document.getElementById('agency').value = c.agencyId || '';
-        document.getElementById('dateFound').value = c.dateFound ? c.dateFound.split('T')[0] : '';
-        document.getElementById('notes').value = c.notes || '';
-        document.getElementById('wouldHire').checked = c.wouldHire || false;
-        document.getElementById('isCurrent').checked = c.isCurrent || false;
-        document.getElementById('active').checked = c.active || false;
-    } catch (err) {
-        console.error('Failed to load candidate:', err);
-    }
-}
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'id';
+        input.value = id;
 
-async function saveCandidate(id) {
-    const candidate = {
-        id: parseInt(id),
-        firstName: document.getElementById('firstName').value,
-        lastName: document.getElementById('lastName').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        linkedIn: document.getElementById('linkedin').value,
-        imagePath: currentCandidate?.imagePath || null,
-        positionId: parseInt(document.getElementById('position').value) || 0,
-        agencyId: parseInt(document.getElementById('agency').value) || 0,
-        dateFound: document.getElementById('dateFound').value,
-        notes: document.getElementById('notes').value,
-        wouldHire: document.getElementById('wouldHire').checked,
-        isCurrent: document.getElementById('isCurrent').checked,
-        active: document.getElementById('active').checked
-    };
-
-    try {
-        const res = await fetch('/Candidate/UpdateCandidate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(candidate)
-        });
-
-        if (res.ok) {
-            // Update the candidate header
-            const header = document.querySelector('[data-candidate-header]');
-            if (header) {
-                loadCandidateHeader(id, header);
-            }
-            Toast.success('Candidate saved successfully.');
-        } else {
-            Toast.error('Failed to save candidate.');
-        }
-    } catch (err) {
-        console.error('Save failed:', err);
-        Toast.error('Failed to save candidate.');
-    }
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    });
 }

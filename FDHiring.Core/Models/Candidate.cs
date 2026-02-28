@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FDHiring.Core.Models
+﻿namespace FDHiring.Core.Models
 {
     public class Candidate
     {
@@ -14,7 +8,6 @@ namespace FDHiring.Core.Models
         public string Email { get; set; } = string.Empty;
         public string? Phone { get; set; }
         public string? LinkedIn { get; set; }
-        public string? ImagePath { get; set; }
         public int PositionId { get; set; }
         public int AgencyId { get; set; }
         public DateTime DateFound { get; set; }
@@ -29,5 +22,7 @@ namespace FDHiring.Core.Models
         public string? PositionName { get; set; }
         public string? AgencyName { get; set; }
         public string? LastUpdatedByName { get; set; }
+        public int? ProfilePictureFileId { get; set; }
+        public string? PhotoPath { get; set; }
     }
 }

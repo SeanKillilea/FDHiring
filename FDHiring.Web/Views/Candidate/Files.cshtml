@@ -1,5 +1,185 @@
-﻿@{
-    ViewData["Title"] = "Files";
+﻿@using FDHiring.Core.Models
+@{
+    ViewData["Title"] = "Candidate Files";
+    var candidate = ViewData["Candidate"] as Candidate;
+    var candidateId = ViewData["CandidateId"] as int?;
+    var files = ViewData["Files"] as List<CandidateFile> ?? new List<CandidateFile>();
+    var selected = ViewData["SelectedFile"] as CandidateFile;
 }
 
-<p>Files page</p>
+@section Scripts {
+    <script type="module" src="~/js/candidate-files.js"></script>
+}
+
+<!-- Back nav -->
+<a href="/Candidate/Search" class="btn btn-ghost mb-lg">
+    <svg class="icon icon-sm"><use href="#icon-arrow-left"></use></svg>
+    Back to Candidates
+</a>
+
+<!-- ===== ACTIVE CANDIDATE CARD ===== -->
+@await Html.PartialAsync("_ActiveCandidate")
+
+@if (candidate == null)
+{
+    <div class="card" style="text-align:center;padding:var(--space-xxxl)">
+        <svg class="icon icon-xl" style="color:var(--text-tertiary);margin-bottom:var(--space-sm)"><use href="#icon-file"></use></svg>
+        <div style="color:var(--text-tertiary);font-size:var(--font-sm)">Select a candidate to manage files</div>
+    </div>
+}
+else
+{
+
+    <!-- ===== FILES LAYOUT ===== -->
+    <div class="files-layout" data-files-layout data-candidate-id="@candidateId">
+
+        <!-- Left: Upload + File list -->
+        <div class="files-panel">
+
+            <!-- Drop zone -->
+            <div class="drop-zone" data-dropzone tabindex="0">
+                <svg class="icon icon-xl"><use href="#icon-upload"></use></svg>
+                <div class="drop-zone-text">Drop or paste files here</div>
+                <div class="drop-zone-hint">Images, PDF, DOCX, XLS — max 10 MB</div>
+            </div>
+
+            <!-- File list -->
+            <div class="section-subtitle mb-sm mt-lg">Files (@files.Count)</div>
+            <div class="file-list">
+                @foreach (var f in files)
+                {
+                    var isSelected = selected?.Id == f.Id;
+                    var ext = System.IO.Path.GetExtension(f.FileName).TrimStart('.').ToLower();
+                    var isImage = ext == "jpg" || ext == "jpeg" || ext == "png" || ext == "gif" || ext == "webp" || ext == "bmp";
+
+                    <div class="file-item @(isSelected ? "active" : "")"
+                         data-file-id="@f.Id"
+                         onclick="window.location.href='/Candidate/Files?fileId=@f.Id'"
+                         style="cursor:pointer">
+                        @if (isImage)
+                        {
+                            <div class="file-thumb file-thumb-img">
+                                <img src="@f.FilePath" alt="@f.FileName" />
+                            </div>
+                        }
+                        else
+                        {
+                            var typeClass = ext == "pdf" ? "pdf"
+                            : (ext == "doc" || ext == "docx") ? "doc"
+                            : (ext == "xls" || ext == "xlsx") ? "xls" : "";
+                            <div class="file-thumb file-thumb-doc">
+                                <span class="file-type-label @typeClass">@ext.ToUpper()</span>
+                            </div>
+                        }
+                        <div class="file-item-info">
+                            <div class="file-item-name">@(!string.IsNullOrEmpty(f.FileDescription) ? f.FileDescription : f.FileName)</div>
+                            <div class="file-item-meta">@FormatFileSize(f.FileSize)</div>
+                        </div>
+                        @if (f.IsUserPicture)
+                        {
+                            <div class="file-item-end">
+                                <span class="badge badge-success badge-dot badge-xs">Pic</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Right: Edit panel (only when a file is selected) -->
+        @if (selected != null)
+        {
+            var selExt = System.IO.Path.GetExtension(selected.FileName).TrimStart('.').ToLower();
+            var selIsImage = selExt == "jpg" || selExt == "jpeg" || selExt == "png" || selExt == "gif" || selExt == "webp" || selExt == "bmp";
+
+            <div class="files-edit-panel">
+                <div class="form-panel">
+                    <div class="form-panel-title">Edit File</div>
+
+                    <!-- Preview row -->
+                    <div class="file-preview-row mb-lg">
+                        <div class="file-preview">
+                            @if (selIsImage)
+                            {
+                                <img src="@selected.FilePath" alt="@selected.FileName" />
+                            }
+                            else
+                            {
+                                var selTypeClass = selExt == "pdf" ? "pdf"
+                                : (selExt == "doc" || selExt == "docx") ? "doc"
+                                : (selExt == "xls" || selExt == "xlsx") ? "xls" : "";
+                                <div style="width:100%;height:100%;display:grid;place-items:center;background:var(--clr-surface-3)">
+                                    <span class="file-type-label @selTypeClass" style="font-size:var(--font-lg)">@selExt.ToUpper()</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="file-preview-actions">
+                            <a class="btn btn-sm" href="@selected.FilePath" target="_blank">
+                                <svg class="icon icon-sm"><use href="#icon-view"></use></svg>
+                                View
+                            </a>
+                            <a class="btn btn-sm" href="/Candidate/DownloadFile?id=@selected.Id">
+                                <svg class="icon icon-sm"><use href="#icon-download"></use></svg>
+                                Download
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Update form -->
+                    <form method="post" asp-action="UpdateFile">
+                        <input type="hidden" name="id" value="@selected.Id" />
+
+                        <div class="form-group">
+                            <label class="form-label">File Name</label>
+                            <input class="input" type="text" value="@selected.FileName" disabled />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Size</label>
+                            <input class="input" type="text" value="@FormatFileSize(selected.FileSize)" disabled />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="textarea" name="fileDescription"
+                              placeholder="Describe this file...">@selected.FileDescription</textarea>
+                        </div>
+
+                        @if (selIsImage)
+                        {
+                            <div class="form-group">
+                                <label class="toggle-label">
+                                    <input class="toggle-input" type="checkbox" name="isUserPicture"
+                                           value="true" @(selected.IsUserPicture ? "checked" : "") />
+                                    Use as profile picture
+                                </label>
+                            </div>
+                        }
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-danger btn-sm" data-delete-file
+                                    data-delete-action="/Candidate/DeleteFile"
+                                    data-delete-id="@selected.Id">
+                                <svg class="icon icon-sm"><use href="#icon-delete"></use></svg>
+                                Delete
+                            </button>
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <svg class="icon icon-sm"><use href="#icon-save"></use></svg>
+                                Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@functions {
+    string FormatFileSize(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
+        return $"{bytes / (1024.0 * 1024.0):F1} MB";
+    }
+}

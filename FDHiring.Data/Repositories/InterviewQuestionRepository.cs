@@ -13,18 +13,19 @@ namespace FDHiring.Data.Repositories
             _db = db;
         }
 
-        public async Task<IEnumerable<InterviewQuestion>> GetByPositionAndNumberAsync(int positionId, int interviewNumber)
+        public async Task<IEnumerable<InterviewQuestion>> GetByPositionAndTypeAsync(int positionId, int interviewTypeId)
         {
             using var conn = _db.CreateConnection();
-            return await conn.QueryAsync<InterviewQuestion>("GetInterviewQuestionsByPosition",
-                new { PositionId = positionId, InterviewNumber = interviewNumber }, commandType: CommandType.StoredProcedure);
+            return await conn.QueryAsync<InterviewQuestion>("GetInterviewQuestionsByPositionAndType",
+                new { PositionId = positionId, InterviewTypeId = interviewTypeId },
+                commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<IEnumerable<InterviewQuestion>> GetAllByPositionAsync(int positionId)
+        public async Task<InterviewQuestion?> GetByIdAsync(int id)
         {
             using var conn = _db.CreateConnection();
-            return await conn.QueryAsync<InterviewQuestion>("GetAllInterviewQuestionsByPosition",
-                new { PositionId = positionId }, commandType: CommandType.StoredProcedure);
+            return await conn.QueryFirstOrDefaultAsync<InterviewQuestion>("GetInterviewQuestionById",
+                new { Id = id }, commandType: CommandType.StoredProcedure);
         }
 
         public async Task<int> InsertAsync(InterviewQuestion q)
@@ -33,7 +34,7 @@ namespace FDHiring.Data.Repositories
             return await conn.ExecuteScalarAsync<int>("InsertInterviewQuestion", new
             {
                 q.PositionId,
-                q.InterviewNumber,
+                q.InterviewTypeId,
                 q.Question,
                 q.SortOrder
             }, commandType: CommandType.StoredProcedure);

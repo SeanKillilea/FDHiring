@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FDHiring.Core.Models
 {
@@ -10,15 +6,16 @@ namespace FDHiring.Core.Models
     {
         public int Id { get; set; }
         public int CandidateId { get; set; }
-        public int WorkflowId { get; set; }
-        public int InterviewNumber { get; set; }
-        public int InterviewedByUserId { get; set; }
+        public int PositionId { get; set; }
+        public int InterviewTypeId { get; set; }
+        public string Owner { get; set; } = string.Empty;
         public DateTime? ScheduledDate { get; set; }
-        public DateTime? CompletedDate { get; set; }
-        public string Status { get; set; } = "Scheduled";
+        public bool CandidateGo { get; set; }
         public string? Notes { get; set; }
 
         // Joined fields
-        public string? InterviewedByName { get; set; }
+        public string? CandidateName { get; set; }
+        public string? PositionName { get; set; }
+        public string? InterviewTypeName { get; set; }
     }
 }

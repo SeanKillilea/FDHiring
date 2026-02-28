@@ -1,0 +1,696 @@
+/* =============================================
+   cards.css — Cards, lists, contacts, workflow
+   ============================================= */
+
+/* ===== Basic Card ===== */
+.card {
+   background: var(--ctrl-bg);
+   border: 1px solid var(--ctrl-border);
+   border-radius: var(--radius);
+   padding: var(--space-lg);
+}
+
+.card-title {
+   font-size: var(--font-lg);
+   font-weight: var(--font-weight-medium);
+   color: var(--text-primary);
+   margin-bottom: var(--space-sm);
+}
+
+.card-text {
+   font-size: var(--font-sm);
+   color: var(--text-secondary);
+   line-height: 1.5;
+}
+
+.content-grid {
+   display: grid;
+   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+   gap: var(--space-lg);
+}
+
+/* ===== Stat Box ===== */
+.stat-row {
+   display: flex;
+   gap: var(--space-lg);
+}
+
+.stat-box {
+   flex: 1;
+   background: var(--ctrl-bg);
+   border: 1px solid var(--ctrl-border);
+   border-radius: var(--radius);
+   padding: var(--space-lg);
+   text-align: center;
+}
+
+.stat-value {
+   font-size: var(--font-xl);
+   font-weight: var(--font-weight-semibold);
+   color: var(--text-primary);
+}
+
+.stat-label {
+   font-size: var(--font-xs);
+   color: var(--text-tertiary);
+   margin-top: var(--space-xs);
+}
+
+/* ===== Contact Card ===== */
+.contact-card {
+   background: var(--ctrl-bg);
+   border: 1px solid var(--ctrl-border);
+   border-radius: var(--radius);
+   padding: var(--space-lg);
+   display: flex;
+   gap: var(--space-lg);
+   align-items: flex-start;
+}
+
+.contact-avatar {
+   width: 64px;
+   height: 64px;
+   border-radius: var(--radius);
+   background: var(--clr-surface-3);
+   border: 1px solid var(--ctrl-border);
+   overflow: hidden;
+   flex-shrink: 0;
+}
+
+.contact-avatar img {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   display: block;
+}
+
+.contact-info {
+   flex: 1;
+   min-width: 0;
+}
+
+.contact-name {
+   font-size: var(--font-lg);
+   font-weight: var(--font-weight-medium);
+   color: var(--text-primary);
+   margin-bottom: var(--space-xxs);
+}
+
+.contact-role {
+   font-size: var(--font-sm);
+   color: var(--text-tertiary);
+   margin-bottom: var(--space-sm);
+}
+
+.contact-meta {
+   display: flex;
+   gap: var(--space-lg);
+   font-size: var(--font-xs);
+   color: var(--text-tertiary);
+}
+
+.contact-meta span {
+   display: flex;
+   align-items: center;
+   gap: var(--space-xs);
+}
+.contact-meta svg {
+   width: 12px;
+   height: 12px;
+}
+
+.contact-actions {
+   display: flex;
+   gap: var(--space-xs);
+   flex-shrink: 0;
+}
+
+/* ===== Generic List ===== */
+.list {
+   background: var(--ctrl-bg);
+   border: 1px solid var(--ctrl-border);
+   border-radius: var(--radius);
+   overflow: hidden;
+}
+
+.list-item {
+   display: flex;
+   align-items: center;
+   gap: var(--space-md);
+   padding: var(--space-md) var(--space-lg);
+   border-bottom: 1px solid var(--clr-border);
+   transition: background var(--ctrl-transition);
+   cursor: pointer;
+}
+
+.list-item:last-child {
+   border-bottom: none;
+}
+.list-item:hover {
+   background: var(--ctrl-bg-hover);
+}
+
+.list-avatar {
+   width: 32px;
+   height: 32px;
+   border-radius: var(--radius-sm);
+   background: var(--clr-surface-3);
+   border: 1px solid var(--clr-border-mid);
+   overflow: hidden;
+   flex-shrink: 0;
+}
+
+.list-avatar img {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   display: block;
+}
+
+.list-content {
+   flex: 1;
+   min-width: 0;
+}
+
+.list-title {
+   font-size: var(--font-sm);
+   font-weight: var(--font-weight-medium);
+   color: var(--text-primary);
+}
+
+.list-sub {
+   font-size: var(--font-xs);
+   color: var(--text-tertiary);
+}
+
+.list-end {
+   display: flex;
+   align-items: center;
+   gap: var(--space-sm);
+   flex-shrink: 0;
+}
+
+/* ===== Candidate Card ===== */
+.candidate-grid {
+   display: grid;
+   grid-template-columns: repeat(auto-fill, minmax(500px, 600px));
+   gap: var(--space-lg);
+}
+
+.candidate-card {
+   background: var(--ctrl-bg);
+   border: 1px solid var(--ctrl-border);
+   border-radius: var(--radius);
+   display: flex;
+   align-items: stretch;
+   min-width: 500px;
+   max-width: 600px;
+   height: 120px;
+   transition: border-color var(--ctrl-transition);
+}
+
+.candidate-card:hover {
+   border-color: var(--ctrl-border-hover);
+}
+
+.candidate-card-photo {
+   width: 120px;
+   flex-shrink: 0;
+   background: var(--clr-surface-3);
+   border-right: 1px solid var(--clr-border);
+   border-radius: var(--radius) 0 0 var(--radius);
+   overflow: hidden;
+}
+
+.candidate-card-photo img {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   display: block;
+}
+
+.candidate-card-body {
+   flex: 1;
+   padding: var(--space-lg);
+   display: flex;
+   flex-direction: column;
+   gap: var(--space-xxs);
+   min-width: 0;
+}
+
+.candidate-name {
+   font-size: var(--font-md);
+   font-weight: var(--font-weight-medium);
+   color: var(--text-primary);
+}
+
+.candidate-position {
+   font-size: var(--font-sm);
+   color: var(--text-tertiary);
+}
+
+.candidate-detail {
+   display: flex;
+   align-items: center;
+   gap: var(--space-xs);
+   font-size: var(--font-xs);
+   color: var(--text-secondary);
+}
+
+.candidate-detail svg {
+   color: var(--text-tertiary);
+}
+
+.candidate-card-aside {
+   width: 100px;
+   flex-shrink: 0;
+   padding: var(--space-md) var(--space-sm);
+   border-left: 1px solid var(--clr-border);
+   display: flex;
+   flex-direction: column;
+   align-items: stretch;
+   gap: var(--space-xs);
+}
+
+.candidate-card-aside .badge {
+   width: 100%;
+   justify-content: flex-start;
+   white-space: nowrap;
+   font-size: var(--font-xs);
+   padding: var(--space-xxs) var(--space-xs);
+}
+
+.candidate-card-aside .badge-empty {
+    background: transparent;
+    border: 1px dashed var(--clr-border);
+    min-height: 1.4em;
+}
+
+.candidate-card-aside .badge-empty::before {
+   display: none;
+}
+
+.candidate-card-aside .btn {
+   margin-top: auto;
+   justify-content: center;
+}
+
+/* Empty state */
+.candidate-card-empty {
+   border-style: dashed;
+   height: 120px;
+}
+
+.candidate-card-empty-content {
+   width: 100%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: var(--space-sm);
+   padding: var(--space-lg);
+   font-size: var(--font-sm);
+   color: var(--text-tertiary);
+}
+
+/* Icon-only button (used for more/menu triggers) */
+.btn-icon {
+   width: 28px;
+   height: 28px;
+   display: grid;
+   place-items: center;
+   background: transparent;
+   border: 1px solid transparent;
+   border-radius: var(--ctrl-radius);
+   color: var(--text-tertiary);
+   cursor: pointer;
+   flex-shrink: 0;
+   transition:
+      background var(--ctrl-transition),
+      color var(--ctrl-transition),
+      border-color var(--ctrl-transition);
+}
+
+.btn-icon:hover {
+   background: var(--ctrl-bg-hover);
+   color: var(--ctrl-text-hover);
+   border-color: var(--ctrl-border-hover);
+}
+
+/* ===== Workflow Item ===== */
+.wf-item {
+   display: flex;
+   align-items: flex-start;
+   gap: var(--space-md);
+   padding: var(--space-md) var(--space-lg);
+   border-bottom: 1px solid var(--clr-border);
+   transition: background var(--ctrl-transition);
+   cursor: pointer;
+}
+
+.wf-item:last-child {
+   border-bottom: none;
+}
+.wf-item:hover {
+   background: var(--ctrl-bg-hover);
+}
+
+.wf-icon {
+   width: 28px;
+   height: 28px;
+   border-radius: var(--ctrl-radius);
+   display: grid;
+   place-items: center;
+   flex-shrink: 0;
+   font-size: var(--font-xs);
+}
+
+.wf-content {
+   flex: 1;
+   min-width: 0;
+}
+
+.wf-title {
+   font-size: var(--font-sm);
+   font-weight: var(--font-weight-medium);
+   color: var(--text-primary);
+   margin-bottom: var(--space-xxs);
+}
+
+.wf-desc {
+   font-size: var(--font-xs);
+   color: var(--text-tertiary);
+}
+
+.wf-end {
+   display: flex;
+   flex-direction: column;
+   align-items: flex-end;
+   gap: var(--space-xxs);
+   flex-shrink: 0;
+}
+
+.wf-time {
+   font-size: var(--font-xs);
+   color: var(--text-muted);
+}
+
+/* ===== Files Layout ===== */
+.files-layout {
+   display: grid;
+   grid-template-columns: 280px 320px;
+   gap: var(--space-xxl);
+   align-items: start;
+}
+
+.files-panel {
+   min-width: 0;
+}
+
+/* Drop zone */
+.drop-zone {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   gap: var(--space-sm);
+   padding: var(--space-xxxl) var(--space-lg);
+   background: var(--ctrl-bg-input);
+   border: 2px dashed var(--ctrl-border);
+   border-radius: var(--radius);
+   cursor: pointer;
+   position: relative;
+   transition:
+      border-color var(--ctrl-transition),
+      background var(--ctrl-transition);
+   color: var(--text-tertiary);
+}
+
+.drop-zone:hover,
+.drop-zone.dragover {
+   border-color: var(--clr-primary-light);
+   background: var(--clr-primary-bg);
+   color: var(--clr-primary-light);
+}
+
+.drop-zone-text {
+   font-size: var(--font-sm);
+   font-weight: var(--font-weight-medium);
+   color: var(--text-secondary);
+}
+
+.drop-zone-hint {
+   font-size: var(--font-xs);
+   color: var(--text-tertiary);
+}
+
+.drop-zone-input {
+   position: absolute;
+   inset: 0;
+   opacity: 0;
+   cursor: pointer;
+}
+
+/* File list */
+.file-list {
+   display: flex;
+   flex-direction: column;
+   gap: var(--space-xs);
+}
+
+.file-item {
+   display: flex;
+   align-items: center;
+   gap: var(--space-md);
+   padding: var(--space-sm) var(--space-md);
+   background: var(--ctrl-bg);
+   border: 1px solid var(--ctrl-border);
+   border-radius: var(--ctrl-radius);
+   cursor: pointer;
+   transition:
+      background var(--ctrl-transition),
+      border-color var(--ctrl-transition);
+}
+
+.file-item:hover {
+   background: var(--ctrl-bg-hover);
+   border-color: var(--ctrl-border-hover);
+}
+
+.file-item.active {
+   background: var(--ctrl-bg-hover);
+   border-color: var(--clr-primary);
+}
+
+/* Thumbnails */
+.file-thumb {
+   width: 40px;
+   height: 40px;
+   border-radius: var(--radius-sm);
+   overflow: hidden;
+   flex-shrink: 0;
+   border: 1px solid var(--clr-border-mid);
+}
+
+.file-thumb-img img {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   display: block;
+}
+
+.file-thumb-doc {
+   background: var(--clr-surface-3);
+   display: grid;
+   place-items: center;
+}
+
+.file-type-label {
+   font-size: var(--font-xxs);
+   font-weight: var(--font-weight-semibold);
+   color: var(--text-secondary);
+   text-transform: uppercase;
+   letter-spacing: 0.05em;
+   line-height: 1;
+}
+
+.file-type-label.pdf {
+   color: var(--clr-danger-light);
+}
+.file-type-label.doc {
+   color: var(--clr-info-light);
+}
+.file-type-label.xls {
+   color: var(--clr-success-light);
+}
+
+.file-item-info {
+   flex: 1;
+   min-width: 0;
+}
+
+.file-item-name {
+   font-size: var(--font-sm);
+   font-weight: var(--font-weight-medium);
+   color: var(--text-primary);
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+}
+
+.file-item-meta {
+   display: flex;
+   align-items: center;
+   gap: var(--space-sm);
+   font-size: var(--font-xs);
+   color: var(--text-tertiary);
+   margin-top: var(--space-xxs);
+}
+
+.file-item-end {
+   flex-shrink: 0;
+}
+
+.badge-xs {
+   font-size: var(--font-xxs);
+   padding: 0 var(--space-xs);
+}
+
+/* Edit panel */
+.files-edit-panel {
+   min-width: 0;
+}
+
+.file-preview {
+   width: 100px;
+   height: 100px;
+   border-radius: var(--radius);
+   border: 1px solid var(--clr-border-mid);
+   overflow: hidden;
+   background: var(--clr-surface-3);
+}
+
+.file-preview img {
+   width: 100%;
+   height: 100%;
+   object-fit: contain;
+   display: block;
+}
+
+.file-preview-row {
+   display: flex;
+   align-items: flex-start;
+   gap: var(--space-md);
+}
+
+.file-preview-actions {
+   display: flex;
+   flex-direction: column;
+   gap: var(--space-xs);
+}
+
+/* =============================================
+   Search bar + Compact candidate card modifier
+   ============================================= */
+
+/* ===== Search / Filter Bar ===== */
+.search-bar {
+   display: flex;
+   align-items: center;
+   gap: var(--space-lg);
+   padding: var(--space-sm) var(--space-lg);
+   background: var(--ctrl-bg);
+   border: 1px solid var(--ctrl-border);
+   border-radius: var(--radius);
+   max-width: 750px;
+}
+
+.search-bar-field {
+   flex: 1;
+   max-width: 320px;
+   display: flex;
+   align-items: center;
+   gap: var(--space-sm);
+}
+
+.search-bar-field svg {
+   color: var(--text-tertiary);
+   flex-shrink: 0;
+}
+
+    .search-bar-field .input {
+        flex: 1;
+        height: 28px;
+        background: var(--clr-surface-1);
+        border: 1px solid var(--clr-border-mid);
+        border-radius: var(--ctrl-radius);
+        padding: 0 var(--space-sm);
+        color: var(--text-primary);
+        font-size: var(--font-sm);
+        outline: none;
+        transition: border-color var(--ctrl-transition), background var(--ctrl-transition);
+    }
+
+        .search-bar-field .input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .search-bar-field .input:hover {
+            border-color: var(--clr-border-hover);
+        }
+
+        .search-bar-field .input:focus {
+            border-color: var(--clr-primary);
+            background: var(--clr-surface-0);
+            box-shadow: var(--ctrl-focus-shadow);
+        }
+
+.search-bar-results {
+   margin-left: auto;
+   font-size: var(--font-xs);
+   color: var(--text-tertiary);
+   white-space: nowrap;
+}
+
+/* ===== Candidate List ===== */
+.candidate-list {
+   display: flex;
+   flex-direction: column;
+   gap: var(--space-xs);
+}
+
+/* ===== Compact modifier (reuses candidate-card) ===== */
+.candidate-card-compact {
+   max-width: 750px;
+   cursor: pointer;
+}
+
+.candidate-card-compact .candidate-card-photo {
+   width: 72px;
+}
+
+.candidate-card-compact .candidate-card-body {
+   flex: 0 0 auto;
+   width: 220px;
+   padding: var(--space-md);
+}
+
+/* Selected state */
+.candidate-card-compact.selected {
+   border-color: var(--clr-primary);
+   background: var(--clr-primary-bg);
+}
+
+/* Notes column — only used in compact cards */
+.candidate-notes {
+   flex: 1;
+   padding: var(--space-md);
+   font-size: var(--font-xs);
+   color: var(--text-tertiary);
+   line-height: 1.5;
+   border-left: 1px solid var(--clr-border);
+   display: flex;
+   align-items: flex-start;
+   min-width: 0;
+   overflow:hidden;
+   max-height:110px;
+}

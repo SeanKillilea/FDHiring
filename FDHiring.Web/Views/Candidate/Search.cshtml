@@ -1,85 +1,70 @@
-﻿@using FDHiring.Core.Models
-@{
-    ViewData["Title"] = "Search";
-    var positions = (IEnumerable<Position>)ViewBag.Positions;
-    var users = (IEnumerable<User>)ViewBag.Users;
-    var currentUserId = (int)(ViewBag.CurrentUserId ?? 0);
-    var searchName = (string)(ViewBag.SearchName ?? "");
-    var searchPositionId = (int)(ViewBag.SearchPositionId ?? 0);
-    var searchCurrent = (bool)(ViewBag.SearchCurrent ?? false);
-    var searchActive = (bool)(ViewBag.SearchActive ?? false);
+﻿@{
+    ViewData["Title"] = "Candidate Search";
+    var searchName = ViewData["SearchName"] as string ?? "";
+    var searchActive = ViewData["SearchActive"] as bool?;
+    var searchCurrent = ViewData["SearchCurrent"] as bool? ?? false;
+    var searchWouldHire = ViewData["SearchWouldHire"] as bool? ?? false;
 }
 
-@section HeaderCenter {
-    <div class="candidate-header hidden" data-candidate-header data-candidate-id="@ViewBag.CurrentCandidateId">
-        <div class="candidate-header-image">
-            <img class="search-bg" data-candidate-image src="" alt="Candidate Photo" />
-        </div>
-        <div class="candidate-header-meta">
-            <span class="candidate-name" data-candidate-name></span>
-            <span class="candidate-position" data-candidate-title></span>
-        </div>
-        <div class="candidate-header-status">
-            <span class="pill would-hire" data-pill-would-hire style="display: none">Would Hire</span>
-            <span class="pill current" data-pill-current style="display: none">Current</span>
-            <span class="pill active" data-pill-active style="display: none">Active</span>
-        </div>
-        <div class="candidate-header-actions">
-            <a href="@(ViewBag.CurrentCandidateId > 0 ? Url.Action("Edit", "Candidate", new { id = (int)ViewBag.CurrentCandidateId }) : "#")" class="btn" data-btn-edit data-tooltip="Edit Candidate">
-                <svg><use href="#icon-edit"></use></svg>
-            </a>
-        </div>
+<!-- ===== ACTIVE CANDIDATE CARD ===== -->
+@await Html.PartialAsync("_ActiveCandidate")
+
+<!-- ===== SEARCH / FILTER BAR ===== -->
+<div class="search-bar mb-sm">
+    <div class="search-bar-field">
+        <svg class="icon icon-sm"><use href="#icon-search"></use></svg>
+        <input class="input" type="text" placeholder="Search candidates..."
+               value="@searchName"
+               data-search-input />
     </div>
-}
-
-@section HeaderRight {
-    <div class="input-group">
-        <label for="user-login" class="input-label">User:</label>
-        <select id="user-login" class="select min-w-120" data-user-login>
-            @foreach (var user in users)
-            {
-                <option value="@user.Id" @(user.Id == currentUserId ? "selected" : "")>@user.FirstName @user.LastName</option>
-            }
-        </select>
-    </div>
-}
-
-@section Toolbar {
-    <div class="content-toolbar">
-        <form class="form" data-search-form>
-            <div class="input-group has-icon">
-                <svg><use href="#icon-search"></use></svg>
-                <input type="text" class="input min-w-200" placeholder="Search by name..." data-search-name value="@searchName" />
-            </div>
-            <select class="select min-w-200" data-search-position>
-                <option value="">All Positions</option>
-                @foreach (var position in positions)
-                {
-                    <option value="@position.Id" @(position.Id == searchPositionId ? "selected" : "")>@position.Name</option>
-                }
-            </select>
-            <label class="checkbox">
-                <input type="checkbox" data-search-current @(searchCurrent ? "checked" : "") />
-                <span>Current</span>
-            </label>
-            <label class="checkbox">
-                <input type="checkbox" data-search-active @(searchActive ? "checked" : "") />
-                <span>Active</span>
-            </label>
-            <button type="button" class="btn btn-primary" data-search-clear>Clear Filters</button>
-            <div class="results-count" data-search-results>
-                <span data-search-showing>0</span>
-                of
-                <span data-search-total>0</span>
-                candidates
-            </div>
-        </form>
-    </div>
-}
-
-<div class="list" data-candidate-results data-selected-candidate="@ViewBag.CurrentCandidateId">
+    <select class="select" style="width:auto;min-width:100px" data-search-active>
+        <!option value=""@(searchActive.HasValue ? "" : " selected")>All</!option>
+        <!option value="true"@(searchActive == true ? " selected" : "")>Active</!option>
+        <!option value="false"@(searchActive == false ? " selected" : "")>Inactive</!option>
+    </select>
+    <label class="check-label">
+        <input class="check-input" type="checkbox"
+               @(searchCurrent ? "checked" : "")
+               data-search-current />
+        Current
+    </label>
+    <label class="check-label">
+        <input class="check-input" type="checkbox"
+               @(searchWouldHire ? "checked" : "")
+               data-search-wouldhire />
+        Would Hire
+    </label>
+    <span class="search-bar-results" data-search-results>Results 0 of 0</span>
 </div>
 
-@section Scripts {
-    <script src="~/js/candidate-search.js"></script>
-}
+<!-- ===== CANDIDATE LIST ===== -->
+<div class="candidate-list" data-candidate-list></div>
+
+<!-- ===== COMPACT CARD TEMPLATE ===== -->
+<template data-tpl="compact-card">
+    <div class="candidate-card candidate-card-compact">
+        <div class="candidate-card-photo" data-field="photo"></div>
+        <div class="candidate-card-body">
+            <div class="candidate-name" data-field="name"></div>
+            <div class="candidate-position" data-field="position"></div>
+            <div class="candidate-detail">
+                <svg class="icon icon-xs"><use href="#icon-email"></use></svg>
+                <span data-field="email"></span>
+            </div>
+            <div class="candidate-detail">
+                <svg class="icon icon-xs"><use href="#icon-phone"></use></svg>
+                <span data-field="phone"></span>
+            </div>
+            <div class="candidate-detail">
+                <svg class="icon icon-xs"><use href="#icon-linkedin"></use></svg>
+                <span data-field="linkedin"></span>
+            </div>
+        </div>
+        <div class="candidate-notes" data-field="notes"></div>
+        <div class="candidate-card-aside">
+            <span data-field="badge-active"></span>
+            <span data-field="badge-wouldhire"></span>
+            <span data-field="badge-current"></span>
+        </div>
+    </div>
+</template>

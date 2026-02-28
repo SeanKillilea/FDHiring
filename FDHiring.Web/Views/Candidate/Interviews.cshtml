@@ -1,0 +1,187 @@
+﻿@using FDHiring.Core.Models
+@{
+    var candidateId = ViewData["CandidateId"] as int?;
+    var candidate = ViewData["Candidate"] as Candidate;
+    var positionId = ViewData["PositionId"] as int? ?? 0;
+    var interviews = ViewData["Interviews"] as List<Interview> ?? new List<Interview>();
+    var types = ViewData["InterviewTypes"] as List<InterviewType> ?? new List<InterviewType>();
+    var users = ViewData["Users"] as List<User> ?? new List<User>();
+    var selected = ViewData["SelectedInterview"] as Interview;
+}
+
+@section Scripts {
+    <script type="module" src="~/js/candidate-interviews.js"></script>
+}
+
+<a asp-action="Edit" asp-route-id="@candidateId" class="btn btn-ghost mb-lg">
+    <svg class="icon icon-sm"><use href="#icon-arrow-left"></use></svg>
+    Back to Candidate
+</a>
+
+<!-- Candidate Card -->
+@await Html.PartialAsync("_ActiveCandidate")
+
+@if (candidate == null)
+{
+    return;
+}
+
+<!-- ===== ADD INTERVIEW ===== -->
+<div class="workflow-add mb-sm" style="max-width:700px" data-interview-add>
+    <form method="post" asp-action="AddInterview" novalidate data-add-interview-form style="display:contents">
+        <input type="hidden" name="candidateId" value="@candidateId" />
+        <input type="hidden" name="positionId" value="@positionId" />
+        <div class="form-row" style="align-items:flex-end">
+            <div class="form-group" style="margin-bottom:0">
+                <label class="form-label" for="ivType">Type</label>
+                <select class="select" id="ivType" name="interviewTypeId" data-required="Type">
+                    <option value="">Select type...</option>
+                    @foreach (var t in types)
+                    {
+                        <option value="@t.Id">@t.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+                <label class="form-label" for="ivOwner">Interviewer</label>
+                <select class="select" id="ivOwner" name="owner" data-required="Interviewer" data-owner-select>
+                    <option value="">Select interviewer...</option>
+                    @foreach (var u in users)
+                    {
+                        <option value="@u.FullName">@u.FullName</option>
+                    }
+                    <option value="__custom__">— Custom —</option>
+                </select>
+                <input class="input mt-sm" name="customOwner" type="text"
+                       placeholder="Enter interviewer name..."
+                       style="display:none" data-custom-owner />
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+                <label class="form-label" for="ivDate">Scheduled</label>
+                <input class="input" id="ivDate" name="scheduledDate" type="date" />
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <svg class="icon icon-sm"><use href="#icon-add"></use></svg>
+                Add
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- ===== EDIT INTERVIEW ===== -->
+@if (selected != null)
+{
+    <div class="workflow-add mb-lg" style="max-width:700px" data-interview-edit>
+        <form method="post" asp-action="UpdateInterview" novalidate>
+            <input type="hidden" name="id" value="@selected.Id" />
+            <div class="section-subtitle mb-sm">Edit Interview — @selected.InterviewTypeName</div>
+            <div class="form-row mb-sm" style="align-items:flex-end">
+                <div class="form-group" style="margin-bottom:0">
+                    <label class="form-label" for="ivEditType">Type</label>
+                    <select class="select" id="ivEditType" name="interviewTypeId" data-required="Type">
+                        <option value="">Select type...</option>
+                        @foreach (var t in types)
+                        {
+                            <option value="@t.Id" selected="@(t.Id == selected.InterviewTypeId)">@t.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                    <label class="form-label" for="ivEditOwner">Interviewer</label>
+                    @{
+                        var isCustomOwner = selected != null && !users.Any(u => u.FullName == selected.Owner);
+                    }
+                    <select class="select" id="ivEditOwner" name="owner" data-required="Interviewer" data-owner-select-edit>
+                        <option value="">Select interviewer...</option>
+                        @foreach (var u in users)
+                        {
+                            <option value="@u.FullName" selected="@(u.FullName == selected.Owner)">@u.FullName</option>
+                        }
+                        <option value="__custom__" selected="@isCustomOwner">— Custom —</option>
+                    </select>
+                    <input class="input mt-sm" name="customOwner" type="text"
+                           placeholder="Enter interviewer name..."
+                           value="@(isCustomOwner? selected.Owner: "")"
+                           style="@(isCustomOwner ? "" : "display:none")" data-custom-owner-edit />
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                    <label class="form-label" for="ivEditDate">Scheduled</label>
+                    <input class="input" id="ivEditDate" name="scheduledDate" type="date"
+                           value="@(selected.ScheduledDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+            </div>
+            <div class="form-row" style="align-items:flex-end">
+                <div class="form-group" style="margin-bottom:0;flex:0 0 auto">
+                    <label class="check-label">
+                        <input class="check-input" type="checkbox" name="candidateGo" value="true"
+                               @(selected.CandidateGo ? "checked" : "") />
+                        Go
+                    </label>
+                </div>
+                <div class="form-group" style="margin-bottom:0;flex:1">
+                    <label class="form-label" for="ivEditNotes">Notes</label>
+                    <textarea class="textarea" id="ivEditNotes" name="notes"
+                          placeholder="Interview notes..." style="min-height:48px">@selected.Notes</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <svg class="icon icon-sm"><use href="#icon-save"></use></svg>
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+}
+
+<!-- ===== INTERVIEW LIST ===== -->
+@if (interviews.Any())
+{
+    <div class="iv-list" style="max-width:700px" data-interview-list>
+        <!-- Header -->
+        <div class="iv-list-header">
+            <div class="iv-col-interviewer">Interviewer</div>
+            <div class="iv-col-type">Type</div>
+            <div class="iv-col-scheduled">Scheduled</div>
+            <div class="iv-col-go">Go</div>
+            <div class="iv-col-notes">Notes</div>
+            <div class="iv-col-actions"></div>
+        </div>
+
+        @foreach (var iv in interviews)
+        {
+            <div class="iv-list-row @(selected?.Id == iv.Id ? "selected" : "")"
+                 data-iv-id="@iv.Id"
+                 data-href="/Candidate/Interviews?interviewId=@iv.Id">
+                <div class="iv-col-interviewer">@iv.Owner</div>
+                <div class="iv-col-type">@iv.InterviewTypeName</div>
+                <div class="iv-col-scheduled">@(iv.ScheduledDate?.ToString("M/d/yyyy") ?? "")</div>
+                <div class="iv-col-go">
+                    <form method="post" asp-action="ToggleInterviewGo">
+                        <input type="hidden" name="id" value="@iv.Id" />
+                        <input type="hidden" name="candidateGo" value="@(!iv.CandidateGo ? "true" : "false")" />
+                        <input class="check-input" type="checkbox"
+                               @(iv.CandidateGo ? "checked" : "")
+                               data-toggle-go />
+                    </form>
+                </div>
+                <div class="iv-col-notes" style="white-space:normal;word-break:break-word">@iv.Notes</div>
+                <div class="iv-col-actions">
+                    <a href="/Candidate/InterviewDetail/@iv.Id" class="btn-icon" title="Questions">
+                        <svg class="icon icon-sm"><use href="#icon-file"></use></svg>
+                    </a>
+                    <button class="btn-icon" title="Delete"
+                            data-delete-interview
+                            data-delete-id="@iv.Id"
+                            data-delete-name="@iv.InterviewTypeName — @iv.Owner">
+                        <svg class="icon icon-sm"><use href="#icon-delete"></use></svg>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div style="max-width:700px;padding:var(--space-xxl);text-align:center;color:var(--text-tertiary);font-size:var(--font-sm);">
+        No interviews yet. Add one above to get started.
+    </div>
+}

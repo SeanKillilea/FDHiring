@@ -1,0 +1,65 @@
+﻿@{
+    var active = ViewData["SidebarActive"] as string ?? "";
+}
+<aside class="sidebar" data-sidebar>
+    <div class="sidebar-icons">
+        <span class="sidebar-tooltip">
+            <a asp-controller="Candidate" asp-action="Search"
+               class="sidebar-btn @(active == "candidates" ? "active" : "")"
+               data-sidebar-btn="candidates">
+                <svg class="icon icon-lg"><use href="#icon-candidates"></use></svg>
+            </a>
+            <span class="tooltip-text">Candidates</span>
+        </span>
+        <span class="sidebar-tooltip">
+            <a asp-controller="Candidate" asp-action="Add"
+               class="sidebar-btn @(active == "add" ? "active" : "")"
+               data-sidebar-btn="add">
+                <svg class="icon icon-lg"><use href="#icon-add"></use></svg>
+            </a>
+            <span class="tooltip-text">Add</span>
+        </span>
+        <span class="sidebar-tooltip">
+            <a asp-controller="Dashboard" asp-action="Index"
+               class="sidebar-btn @(active == "dashboard" ? "active" : "")"
+               data-sidebar-btn="dashboard">
+                <svg class="icon icon-lg"><use href="#icon-dashboard"></use></svg>
+            </a>
+            <span class="tooltip-text">Dashboard</span>
+        </span>
+        <span class="sidebar-tooltip">
+            <a asp-controller="Candidate" asp-action="Workflow"
+               class="sidebar-btn @(active == "workflow" ? "active" : "")"
+               data-sidebar-btn="workflow">
+                <svg class="icon icon-lg"><use href="#icon-workflow"></use></svg>
+            </a>
+            <span class="tooltip-text">Workflow</span>
+        </span>
+        <span class="sidebar-tooltip">
+            <a asp-controller="Candidate" asp-action="Interviews"
+               class="sidebar-btn @(active == "interview" ? "active" : "")"
+               data-sidebar-btn="interview">
+                <svg class="icon icon-lg"><use href="#icon-interview"></use></svg>
+            </a>
+            <span class="tooltip-text">Interview</span>
+        </span>
+        <span class="sidebar-tooltip">
+            <a asp-controller="Candidate" asp-action="Files"
+               class="sidebar-btn @(active == "files" ? "active" : "")"
+               data-sidebar-btn="files">
+                <svg class="icon icon-lg"><use href="#icon-file"></use></svg>
+            </a>
+            <span class="tooltip-text">Files</span>
+        </span>
+    </div>
+    <div class="sidebar-bottom">
+        <span class="sidebar-tooltip">
+            <a asp-controller="Settings" asp-action="Index"
+               class="sidebar-btn @(active == "settings" ? "active" : "")"
+               data-sidebar-btn="settings">
+                <svg class="icon icon-lg"><use href="#icon-settings"></use></svg>
+            </a>
+            <span class="tooltip-text">Settings</span>
+        </span>
+    </div>
+</aside>

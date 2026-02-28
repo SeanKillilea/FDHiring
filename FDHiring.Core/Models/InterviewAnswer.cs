@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FDHiring.Core.Models
+﻿namespace FDHiring.Core.Models
 {
     public class InterviewAnswer
     {
@@ -12,9 +6,10 @@ namespace FDHiring.Core.Models
         public int InterviewId { get; set; }
         public int InterviewQuestionId { get; set; }
         public string? Answer { get; set; }
-        public int AnsweredByUserId { get; set; }
+        public string AnsweredByUser { get; set; } = string.Empty;
 
         // Joined fields
         public string? Question { get; set; }
+        public int SortOrder { get; set; }
     }
 }

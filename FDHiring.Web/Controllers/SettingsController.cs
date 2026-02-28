@@ -7,6 +7,7 @@ namespace FDHiring.Web.Controllers
         public IActionResult Index()
         {
             ViewData["Title"] = "Settings";
+            ViewData["SidebarActive"] = "settings";
             return View();
         }
     }

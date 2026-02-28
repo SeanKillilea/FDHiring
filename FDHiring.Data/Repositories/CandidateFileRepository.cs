@@ -43,7 +43,6 @@ namespace FDHiring.Data.Repositories
                 f.FileName,
                 f.FileDescription,
                 f.FilePath,
-                f.FileType,
                 f.FileSize,
                 f.IsUserPicture,
                 f.UploadedByUserId
@@ -55,6 +54,25 @@ namespace FDHiring.Data.Repositories
             using var conn = _db.CreateConnection();
             await conn.ExecuteAsync("DeleteCandidateFile",
                 new { Id = id }, commandType: CommandType.StoredProcedure);
+        }
+
+        public async Task UpdateAsync(CandidateFile f)
+        {
+            using var conn = _db.CreateConnection();
+            await conn.ExecuteAsync("UpdateCandidateFile", new
+            {
+                f.Id,
+                f.FileDescription,
+                f.IsUserPicture
+            }, commandType: CommandType.StoredProcedure);
+        }
+
+        public async Task SetProfilePictureAsync(int id, int candidateId)
+        {
+            using var conn = _db.CreateConnection();
+            await conn.ExecuteAsync("SetCandidateProfilePicture",
+                new { Id = id, CandidateId = candidateId },
+                commandType: CommandType.StoredProcedure);
         }
     }
 }

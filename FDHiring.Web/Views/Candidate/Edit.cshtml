@@ -1,91 +1,218 @@
 ﻿@using FDHiring.Core.Models
 @{
     ViewData["Title"] = "Edit Candidate";
-    var positions = (IEnumerable<Position>)ViewBag.Positions;
-    var agencies = (IEnumerable<Agency>)ViewBag.Agencies;
-    var candidateId = (int)ViewBag.CandidateId;
+    var candidate = ViewData["Candidate"] as Candidate;
+    var positions = ViewData["Positions"] as IEnumerable<Position> ?? Enumerable.Empty<Position>();
+    var agencies = ViewData["Agencies"] as IEnumerable<Agency> ?? Enumerable.Empty<Agency>();
 }
-
-@section Toolbar {
-    <div class="content-toolbar"></div>
-}
-
-<form class="form edit-form" data-candidate-form data-candidate-id="@candidateId">
-    <div class="input-group form-row">
-        <label for="firstName">First Name</label>
-        <input type="text" id="firstName" name="firstName" class="input" />
-    </div>
-    <div class="input-group form-row">
-        <label for="lastName">Last Name</label>
-        <input type="text" id="lastName" name="lastName" class="input" />
-    </div>
-    <div class="input-group form-row">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" class="input" />
-    </div>
-    <div class="input-group form-row">
-        <label for="phone">Phone</label>
-        <input type="tel" id="phone" name="phone" class="input" />
-    </div>
-    <div class="input-group form-row">
-        <label for="linkedin">LinkedIn</label>
-        <input type="text" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/..." class="input" />
-    </div>
-    <div class="input-group form-row">
-        <label for="position">Position</label>
-        <select id="position" name="positionId" class="select">
-            <option value="">Select Position</option>
-            @foreach (var p in positions)
-            {
-                <option value="@p.Id">@p.Name</option>
-            }
-        </select>
-    </div>
-    <div class="input-group form-row">
-        <label for="agency">Agency</label>
-        <select id="agency" name="agencyId" class="select">
-            <option value="">Select Agency</option>
-            @foreach (var a in agencies)
-            {
-                <option value="@a.Id">@a.Name</option>
-            }
-        </select>
-    </div>
-    <div class="input-group form-row">
-        <label for="dateFound">Date Found</label>
-        <input type="date" id="dateFound" name="dateFound" class="input" />
-    </div>
-    <div class="input-group form-row">
-        <label for="notes">Notes</label>
-        <textarea id="notes" name="notes" class="textarea"></textarea>
-    </div>
-    <div class="input-group form-row">
-        <label class="checkbox">
-            <input type="checkbox" id="wouldHire" name="wouldHire" />
-            <span>Would Hire</span>
-        </label>
-    </div>
-    <div class="input-group form-row">
-        <label class="checkbox">
-            <input type="checkbox" id="isCurrent" name="isCurrent" />
-            <span>Current</span>
-        </label>
-    </div>
-    <div class="input-group form-row">
-        <label class="checkbox">
-            <input type="checkbox" id="active" name="active" />
-            <span>Active</span>
-        </label>
-    </div>
-    <div class="form-actions">
-        <button type="button" class="btn btn-danger" data-btn-delete>Delete Candidate</button>
-        <div class="form-actions-right">
-            <button type="button" class="btn btn-secondary" data-btn-cancel>Cancel</button>
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-        </div>
-    </div>
-</form>
 
 @section Scripts {
-    <script src="~/js/candidate-edit.js"></script>
+    <script type="module" src="~/js/candidate-edit.js"></script>
+}
+
+@if (candidate == null)
+{
+    <div class="card" style="text-align:center;padding:var(--space-xxxl)">
+        <svg class="icon icon-xl" style="color:var(--text-tertiary);margin-bottom:var(--space-sm)"><use href="#icon-candidates"></use></svg>
+        <div style="color:var(--text-tertiary);font-size:var(--font-sm)">Candidate not found</div>
+    </div>
+}
+else
+{
+    <!-- Back nav -->
+    <a href="/Candidate/Search" class="btn btn-ghost mb-lg">
+        <svg class="icon icon-sm"><use href="#icon-arrow-left"></use></svg>
+        Back to Candidates
+    </a>
+
+    <!-- Candidate Card (read-only summary) -->
+    <div class="candidate-card mb-xxl">
+        <div class="candidate-card-photo">
+            @if (!string.IsNullOrEmpty(candidate.PhotoPath))
+            {
+                <img src="@candidate.PhotoPath" alt="@candidate.FirstName @candidate.LastName" />
+            }
+            else
+            {
+                <div style="width:100%;height:100%;display:grid;place-items:center;background:var(--clr-surface-3)">
+                    <svg class="icon icon-xl" style="color:var(--text-tertiary)"><use href="#icon-user"></use></svg>
+                </div>
+            }
+        </div>
+        <div class="candidate-card-body">
+            <div class="candidate-name">@candidate.FirstName @candidate.LastName</div>
+            <div class="candidate-position">@candidate.PositionName</div>
+            <div class="candidate-detail">
+                <svg class="icon icon-xs"><use href="#icon-email"></use></svg>
+                <span>@candidate.Email</span>
+            </div>
+            <div class="candidate-detail">
+                <svg class="icon icon-xs"><use href="#icon-phone"></use></svg>
+                <span>@(candidate.Phone ?? "")</span>
+            </div>
+            <div class="candidate-detail">
+                <svg class="icon icon-xs"><use href="#icon-linkedin"></use></svg>
+                <span>@(candidate.LinkedIn ?? "")</span>
+            </div>
+        </div>
+        <div class="candidate-card-aside">
+            @if (candidate.Active)
+            {
+                <span class="badge badge-success badge-dot">Active</span>
+            }
+            else
+            {
+                <span class="badge badge-empty">&nbsp;</span>
+            }
+            @if (candidate.WouldHire)
+            {
+                <span class="badge badge-info badge-dot">Would Hire</span>
+            }
+            else
+            {
+                <span class="badge badge-empty">&nbsp;</span>
+            }
+            @if (candidate.IsCurrent)
+            {
+                <span class="badge badge-accent badge-dot">Current</span>
+            }
+            else
+            {
+                <span class="badge badge-empty">&nbsp;</span>
+            }
+        </div>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="form-panel" style="max-width:700px">
+        <div class="form-panel-title">Edit Candidate</div>
+
+        <form method="post" asp-action="Edit" asp-route-id="@candidate.Id" data-edit-form novalidate>
+            <input type="hidden" name="id" value="@candidate.Id" />
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="firstName">
+                        First Name <span class="required">*</span>
+                    </label>
+                    <input class="input" id="firstName" name="firstName" type="text"
+                           value="@candidate.FirstName" data-required="First Name" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="lastName">
+                        Last Name <span class="required">*</span>
+                    </label>
+                    <input class="input" id="lastName" name="lastName" type="text"
+                           value="@candidate.LastName" data-required="Last Name" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="email">
+                        Email <span class="required">*</span>
+                    </label>
+                    <input class="input" id="email" name="email" type="text"
+                           value="@candidate.Email" data-required="Email" data-email />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="linkedIn">LinkedIn</label>
+                    <input class="input" id="linkedIn" name="linkedIn" type="text"
+                           value="@candidate.LinkedIn" />
+                </div>
+            </div>
+
+            <div class="form-group" style="max-width:calc(50% - var(--space-sm))">
+                <label class="form-label" for="phone">Phone</label>
+                <input class="input" id="phone" name="phone" type="tel"
+                       value="@candidate.Phone" />
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="positionId">
+                        Position <span class="required">*</span>
+                    </label>
+                    <select class="select" id="positionId" name="positionId" data-required="Position">
+                        @foreach (var p in positions)
+                        {
+                            if (p.Id == candidate.PositionId)
+                            {
+                                <option value="@p.Id" selected>@p.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@p.Id">@p.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="agencyId">
+                        Agency <span class="required">*</span>
+                    </label>
+                    <select class="select" id="agencyId" name="agencyId" data-required="Agency">
+                        @foreach (var a in agencies)
+                        {
+                            if (a.Id == candidate.AgencyId)
+                            {
+                                <option value="@a.Id" selected>@a.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@a.Id">@a.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" style="max-width:calc(50% - var(--space-sm))">
+                <label class="form-label" for="dateFound">Date Found</label>
+                <input class="input" id="dateFound" name="dateFound" type="date"
+                       value="@candidate.DateFound.ToString("yyyy-MM-dd")" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="notes">Notes</label>
+                <textarea class="textarea m-height-5" id="notes" name="notes"
+                      placeholder="Internal notes about this candidate...">@candidate.Notes</textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Status</label>
+                <div style="display:flex;flex-direction:column;gap:var(--space-sm)">
+                    <label class="toggle-label">
+                        <input class="toggle-input" type="checkbox" name="active"
+                               value="true" @(candidate.Active ? "checked" : "") />
+                        Active
+                    </label>
+                    <label class="toggle-label">
+                        <input class="toggle-input" type="checkbox" name="wouldHire"
+                               value="true" @(candidate.WouldHire ? "checked" : "") />
+                        Would Hire
+                    </label>
+                    <label class="toggle-label">
+                        <input class="toggle-input" type="checkbox" name="isCurrent"
+                               value="true" @(candidate.IsCurrent ? "checked" : "") />
+                        Current
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="/Candidate/Search" class="btn">Cancel</a>
+                <button type="button" class="btn btn-danger" data-delete-candidate
+                        data-delete-action="/Candidate/DeleteCandidate"
+                        data-delete-id="@candidate.Id">
+                    <svg class="icon icon-sm"><use href="#icon-delete"></use></svg>
+                    Delete
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <svg class="icon icon-sm"><use href="#icon-save"></use></svg>
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
 }

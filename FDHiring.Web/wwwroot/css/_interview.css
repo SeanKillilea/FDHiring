@@ -1,0 +1,312 @@
+/* =============================================
+   Interview list (columnar)
+   Reuses: .workflow-add, .check-input, .btn-icon,
+           .section-subtitle, .form-row, .form-group,
+           .form-label, .select, .input, .textarea,
+           .form-actions, .btn, .btn-primary
+   ============================================= */
+
+/* Wrapper */
+.iv-list {
+   display: flex;
+   flex-direction: column;
+   gap: var(--space-xs);
+}
+
+/* Shared column grid for header + rows */
+.iv-list-header,
+.iv-list-row {
+   display: grid;
+   grid-template-columns: 120px 100px 90px 36px 1fr auto;
+   align-items: center;
+   gap: var(--space-xs);
+   padding: var(--space-xs) var(--space-lg);
+}
+
+/* Header */
+.iv-list-header {
+   font-size: var(--font-xs);
+   font-weight: var(--font-weight-medium);
+   color: var(--text-tertiary);
+   text-transform: uppercase;
+   letter-spacing: 0.06em;
+   padding-bottom: var(--space-sm);
+   border-bottom: 1px solid var(--clr-border);
+}
+
+/* Rows */
+.iv-list-row {
+   background: var(--ctrl-bg);
+   border: 1px solid var(--ctrl-border);
+   border-radius: var(--radius);
+   transition: background var(--ctrl-transition);
+   cursor: pointer;
+}
+
+.iv-list-row:hover {
+   background: var(--ctrl-bg-hover);
+}
+
+.iv-list-row.selected {
+   border-color: var(--clr-primary);
+   background: var(--clr-primary-bg);
+}
+
+/* Interviewer */
+.iv-col-interviewer {
+   font-size: var(--font-sm);
+   font-weight: var(--font-weight-medium);
+   color: var(--text-primary);
+   min-width: 0;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+}
+
+/* Type */
+.iv-col-type {
+   font-size: var(--font-xs);
+   color: var(--text-secondary);
+   min-width: 0;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+}
+
+/* Scheduled */
+.iv-col-scheduled {
+   font-size: var(--font-xs);
+   color: var(--text-secondary);
+   min-width: 0;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+}
+
+/* Go checkbox */
+.iv-col-go {
+   display: grid;
+   place-items: center;
+}
+
+/* Notes */
+.iv-col-notes {
+   font-size: var(--font-xs);
+   color: var(--text-tertiary);
+   line-height: 1.4;
+   min-width: 0;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+}
+
+/* Actions (go-to + delete) */
+.iv-col-actions {
+   display: flex;
+   align-items: center;
+   gap: var(--space-xxs);
+   flex-shrink: 0;
+}
+
+/* =============================================
+   Interview list (columnar)
+   Reuses: .workflow-add, .check-input, .btn-icon,
+           .section-subtitle, .form-row, .form-group,
+           .form-label, .select, .input, .textarea,
+           .form-actions, .btn, .btn-primary
+   ============================================= */
+
+/* Wrapper */
+.iv-list {
+   display: flex;
+   flex-direction: column;
+   gap: var(--space-xs);
+}
+
+/* Shared column grid for header + rows */
+.iv-list-header,
+.iv-list-row {
+   display: grid;
+   grid-template-columns: 120px 100px 90px 36px 1fr auto;
+   align-items: center;
+   gap: var(--space-xs);
+   padding: var(--space-xs) var(--space-lg);
+}
+
+/* Header */
+.iv-list-header {
+   font-size: var(--font-xs);
+   font-weight: var(--font-weight-medium);
+   color: var(--text-tertiary);
+   text-transform: uppercase;
+   letter-spacing: 0.06em;
+   padding-bottom: var(--space-sm);
+   border-bottom: 1px solid var(--clr-border);
+}
+
+/* Rows */
+.iv-list-row {
+   background: var(--ctrl-bg);
+   border: 1px solid var(--ctrl-border);
+   border-radius: var(--radius);
+   transition: background var(--ctrl-transition);
+   cursor: pointer;
+}
+
+.iv-list-row:hover {
+   background: var(--ctrl-bg-hover);
+}
+
+.iv-list-row.selected {
+   border-color: var(--clr-primary);
+   background: var(--clr-primary-bg);
+}
+
+/* Interviewer */
+.iv-col-interviewer {
+   font-size: var(--font-sm);
+   font-weight: var(--font-weight-medium);
+   color: var(--text-primary);
+   min-width: 0;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+}
+
+/* Type */
+.iv-col-type {
+   font-size: var(--font-xs);
+   color: var(--text-secondary);
+   min-width: 0;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+}
+
+/* Scheduled */
+.iv-col-scheduled {
+   font-size: var(--font-xs);
+   color: var(--text-secondary);
+   min-width: 0;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+}
+
+/* Go checkbox */
+.iv-col-go {
+   display: grid;
+   place-items: center;
+}
+
+/* Notes */
+.iv-col-notes {
+   font-size: var(--font-xs);
+   color: var(--text-tertiary);
+   line-height: 1.4;
+   min-width: 0;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+}
+
+/* Actions (go-to + delete) */
+.iv-col-actions {
+   display: flex;
+   align-items: center;
+   gap: var(--space-xxs);
+   flex-shrink: 0;
+}
+
+/* =============================================
+   Interview detail — info + Q&A
+   ============================================= */
+
+/* Read-only detail value */
+.iv-detail-value {
+   font-size: var(--font-sm);
+   font-weight: var(--font-weight-medium);
+   color: var(--text-primary);
+   padding: var(--space-xs) 0;
+}
+
+/* Q&A list */
+.qa-list {
+   display: flex;
+   flex-direction: column;
+   gap: var(--space-sm);
+}
+
+/* Single Q&A item */
+.qa-item {
+   display: flex;
+   gap: var(--space-sm);
+   background: var(--ctrl-bg);
+   border: 1px solid var(--ctrl-border);
+   border-radius: var(--radius);
+   padding: var(--space-md);
+   transition: border-color var(--ctrl-transition);
+}
+
+.qa-item:hover {
+   border-color: var(--ctrl-border-hover);
+}
+
+/* Drag handle */
+.qa-handle {
+   display: flex;
+   align-items: flex-start;
+   padding-top: var(--space-xxs);
+   color: var(--text-tertiary);
+   cursor: grab;
+   flex-shrink: 0;
+}
+
+.qa-handle:active {
+   cursor: grabbing;
+}
+
+/* Body (question + answer) */
+.qa-body {
+   flex: 1;
+   min-width: 0;
+   display: flex;
+   flex-direction: column;
+   gap: var(--space-sm);
+}
+
+/* Question header row */
+.qa-header {
+   display: flex;
+   align-items: flex-start;
+   gap: var(--space-sm);
+}
+
+/* Question number */
+.qa-number {
+   flex-shrink: 0;
+   width: 20px;
+   height: 20px;
+   border-radius: var(--radius-full);
+   background: var(--clr-surface-3);
+   border: 1px solid var(--clr-border-mid);
+   display: grid;
+   place-items: center;
+   font-size: var(--font-xs);
+   font-weight: var(--font-weight-semibold);
+   color: var(--text-tertiary);
+}
+
+/* Question text */
+.qa-question {
+   flex: 1;
+   font-size: var(--font-sm);
+   font-weight: var(--font-weight-medium);
+   color: var(--text-primary);
+   line-height: 1.5;
+}
+
+/* Answer textarea */
+.qa-answer {
+   min-height: 56px;
+}

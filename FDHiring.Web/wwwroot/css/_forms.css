@@ -1,0 +1,284 @@
+/* =============================================
+   forms.css — All form controls
+   ============================================= */
+
+/* Form structure */
+.form-group {
+   margin-bottom: var(--space-lg);
+}
+.form-row {
+   display: flex;
+   gap: var(--space-lg);
+}
+.form-row .form-group {
+   flex: 1;
+}
+
+.form-label {
+   display: block;
+   font-size: var(--font-xs);
+   font-weight: var(--font-weight-medium);
+   color: var(--text-secondary);
+   margin-bottom: var(--space-xs);
+}
+
+.form-label .required {
+   color: var(--clr-danger-light);
+   margin-left: var(--space-xxs);
+}
+
+.form-helper {
+   font-size: var(--font-xs);
+   color: var(--text-tertiary);
+   margin-top: var(--space-xxs);
+}
+
+.form-error {
+   font-size: var(--font-xs);
+   color: var(--clr-danger-light);
+   margin-top: var(--space-xxs);
+}
+
+.form-actions {
+   display: flex;
+   gap: var(--space-sm);
+   justify-content: flex-end;
+   padding-top: var(--space-lg);
+   border-top: 1px solid var(--clr-border);
+   margin-top: var(--space-lg);
+}
+
+/* Form panel (card wrapper for forms) */
+.form-panel {
+   background: var(--ctrl-bg);
+   border: 1px solid var(--ctrl-border);
+   border-radius: var(--radius);
+   padding: var(--space-xxl);
+}
+
+.form-panel-title {
+   font-size: var(--font-lg);
+   font-weight: var(--font-weight-medium);
+   color: var(--text-primary);
+   margin-bottom: var(--space-xxl);
+   padding-bottom: var(--space-md);
+   border-bottom: 1px solid var(--clr-border);
+}
+
+/* Text input, select, textarea — shared base */
+.input,
+.select,
+.textarea {
+   width: 100%;
+   height: 30px;
+   background: var(--ctrl-bg-input);
+   color: var(--text-primary);
+   border: 1px solid var(--ctrl-border);
+   border-radius: var(--ctrl-radius);
+   padding: 0 var(--space-sm);
+   font-family: var(--font-family-base);
+   font-size: var(--font-sm);
+   outline: none;
+   transition:
+      border-color var(--ctrl-transition),
+      box-shadow var(--ctrl-transition);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+   color: var(--text-placeholder);
+}
+.input:hover,
+.select:hover,
+.textarea:hover {
+   border-color: var(--ctrl-border-hover);
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+   border-color: var(--ctrl-border-focus);
+   box-shadow: var(--ctrl-focus-shadow);
+}
+
+/* Error state */
+.input.error {
+   border-color: var(--clr-danger);
+}
+
+/* Disabled state */
+.input[disabled],
+.select[disabled],
+.textarea[disabled] {
+   background: var(--ctrl-disabled-bg);
+   color: var(--ctrl-disabled-text);
+   border-color: var(--ctrl-disabled-border);
+   cursor: not-allowed;
+}
+
+/* Textarea overrides */
+.textarea {
+   height: auto;
+   min-height: 12rem;
+   padding: var(--space-sm);
+   resize: vertical;
+}
+
+/* Select overrides */
+.select {
+   appearance: none;
+   padding-right: var(--space-xl);
+   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23878787' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='M3 4.5l3 3 3-3'/%3E%3C/svg%3E");
+   background-repeat: no-repeat;
+   background-position: right var(--space-sm) center;
+}
+
+/* Checkbox / Radio — shared base */
+.check-label {
+   display: inline-flex;
+   align-items: center;
+   gap: var(--space-sm);
+   font-size: var(--font-sm);
+   color: var(--text-secondary);
+   cursor: pointer;
+   transition: color var(--ctrl-transition);
+}
+
+.check-label:hover {
+   color: var(--text-primary);
+}
+
+.check-input {
+   appearance: none;
+   width: 16px;
+   height: 16px;
+   border: 1px solid var(--ctrl-border);
+   border-radius: var(--ctrl-radius);
+   background: var(--ctrl-bg-input);
+   cursor: pointer;
+   transition:
+      background var(--ctrl-transition),
+      border-color var(--ctrl-transition);
+   flex-shrink: 0;
+   position: relative;
+}
+
+.check-input:hover {
+   border-color: var(--ctrl-border-hover);
+}
+
+.check-input:checked {
+   background: var(--ctrl-checked-bg);
+   border-color: var(--ctrl-checked-border);
+}
+
+.check-input:checked::after {
+   content: '';
+   position: absolute;
+   left: 4.5px;
+   top: 1.5px;
+   width: 5px;
+   height: 9px;
+   border: solid var(--text-inverse);
+   border-width: 0 1.5px 1.5px 0;
+   transform: rotate(40deg);
+}
+
+.check-input:focus-visible {
+   box-shadow: var(--ctrl-focus-shadow);
+}
+
+/* Radio overrides */
+.check-input[type='radio'] {
+   border-radius: var(--radius-full);
+}
+
+.check-input[type='radio']:checked::after {
+   left: 4px;
+   top: 4px;
+   width: 6px;
+   height: 6px;
+   border: none;
+   border-radius: var(--radius-full);
+   background: var(--text-inverse);
+   transform: none;
+}
+
+/* Toggle / Switch */
+.toggle-label {
+   display: inline-flex;
+   align-items: center;
+   gap: var(--space-sm);
+   font-size: var(--font-sm);
+   color: var(--text-secondary);
+   cursor: pointer;
+}
+
+.toggle-input {
+   appearance: none;
+   width: 32px;
+   height: 18px;
+   border-radius: var(--radius-full);
+   background: var(--clr-border-strong);
+   border: 1px solid var(--ctrl-border);
+   cursor: pointer;
+   position: relative;
+   transition:
+      background var(--ctrl-transition),
+      border-color var(--ctrl-transition);
+   flex-shrink: 0;
+}
+
+.toggle-input::after {
+   content: '';
+   position: absolute;
+   left: 2px;
+   top: 50%;
+   transform: translateY(-50%);
+   width: 12px;
+   height: 12px;
+   border-radius: var(--radius-full);
+   background: var(--text-secondary);
+   transition:
+      left var(--ctrl-transition),
+      background var(--ctrl-transition);
+}
+
+.toggle-input:checked {
+   background: var(--ctrl-checked-bg);
+   border-color: var(--ctrl-checked-border);
+}
+
+.toggle-input:checked::after {
+   left: 16px;
+   background: var(--text-inverse);
+}
+
+.toggle-input:focus-visible {
+   box-shadow: var(--ctrl-focus-shadow);
+}
+
+/* File upload display */
+.file-upload {
+   display: flex;
+   align-items: center;
+   gap: var(--space-sm);
+   padding: var(--space-xs) var(--space-sm);
+   background: var(--ctrl-bg-input);
+   border: 1px dashed var(--ctrl-border);
+   border-radius: var(--ctrl-radius);
+   height: 30px;
+}
+
+.file-upload svg {
+   color: var(--text-tertiary);
+}
+
+.file-upload-text {
+   flex: 1;
+   font-size: var(--font-sm);
+   color: var(--text-secondary);
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+}

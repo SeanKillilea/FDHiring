@@ -1,5 +1,178 @@
-﻿@{
-    ViewData["Title"] = "Workflow";
+﻿@using FDHiring.Core.Models
+@{
+    var candidateId = ViewData["CandidateId"] as int?;
+    var candidate = ViewData["Candidate"] as Candidate;
+    var positionId = ViewData["PositionId"] as int? ?? 0;
+    var steps = ViewData["WorkflowSteps"] as List<Workflow> ?? new List<Workflow>();
+    var templates = ViewData["TemplateSteps"] as List<WorkflowStep> ?? new List<WorkflowStep>();
+    var users = ViewData["Users"] as List<User> ?? new List<User>();
+    var selected = ViewData["SelectedStep"] as Workflow;
 }
 
-<p>Workflow page</p>
+@section Scripts {
+    <script type="module" src="~/js/candidate-workflow.js"></script>
+}
+
+<a asp-action="Edit" asp-route-id="@candidateId" class="btn btn-ghost mb-lg">
+    <svg class="icon icon-sm"><use href="#icon-arrow-left"></use></svg>
+    Back to Candidate
+</a>
+
+<!-- Candidate Card -->
+@await Html.PartialAsync("_ActiveCandidate")
+
+@if (candidate == null)
+{
+    return;
+}
+
+<!-- ===== ADD WORKFLOW STEP ===== -->
+<div class="workflow-add mb-sm" style="max-width:700px" data-workflow-add>
+    <div class="form-row" style="align-items:flex-end">
+        <!-- Add single step form -->
+        <form method="post" asp-action="AddWorkflowStep" novalidate
+              style="display:contents" data-add-step-form>
+            <input type="hidden" name="candidateId" value="@candidateId" />
+            <input type="hidden" name="positionId" value="@positionId" />
+            <div class="form-group" style="margin-bottom:0">
+                <label class="form-label" for="wfItem">Item</label>
+                <select class="select" id="wfItem" name="stepName" data-required="Item" data-step-select>
+                    <option value="">Select item...</option>
+                    @foreach (var t in templates)
+                    {
+                        <option value="@t.StepName">@t.StepName</option>
+                    }
+                    <option value="__custom__">— Custom step —</option>
+                </select>
+                <input class="input mt-sm" id="wfCustomItem" name="customStepName"
+                       type="text" placeholder="Enter custom step name..."
+                       style="display:none" data-custom-step />
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+                <label class="form-label" for="wfOwner">Owner</label>
+                <select class="select" id="wfOwner" name="owner">
+                    <option value="">Select owner...</option>
+                    @foreach (var u in users)
+                    {
+                        <option value="@u.FullName">@u.FullName</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <svg class="icon icon-sm"><use href="#icon-add"></use></svg>
+                Add
+            </button>
+        </form>
+        <!-- Add all steps form (sibling, not nested) -->
+        <form method="post" asp-action="AddAllWorkflowSteps" style="display:inline">
+            <input type="hidden" name="candidateId" value="@candidateId" />
+            <input type="hidden" name="positionId" value="@positionId" />
+            <button type="submit" class="btn btn-success">
+                <svg class="icon icon-sm"><use href="#icon-add"></use></svg>
+                Add All
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ===== EDIT WORKFLOW STEP ===== -->
+@if (selected != null)
+{
+    <div class="workflow-add mb-lg" style="max-width:700px" data-workflow-edit>
+        <form method="post" asp-action="UpdateWorkflowStep" novalidate>
+            <input type="hidden" name="id" value="@selected.Id" />
+            <input type="hidden" name="complete" value="@selected.Complete.ToString().ToLower()" />
+            <div class="section-subtitle mb-sm">Edit Step — @selected.StepName</div>
+            <div class="form-row" style="align-items:flex-end">
+                <div class="form-group" style="margin-bottom:0">
+                    <label class="form-label" for="wfEditItem">Item</label>
+                    @{
+                        var isCustom = selected != null && !templates.Any(t => t.StepName == selected.StepName);
+                    }
+                    <select class="select" id="wfEditItem" name="stepName" data-required="Item" data-step-select-edit>
+                        <option value="">Select item...</option>
+                        @foreach (var t in templates)
+                        {
+                            <option value="@t.StepName" selected="@(t.StepName == selected.StepName)">@t.StepName</option>
+                        }
+                        <option value="__custom__" selected="@isCustom">— Custom step —</option>
+                    </select>
+                    <input class="input mt-sm" id="wfEditCustomItem" name="customStepName"
+                           type="text" placeholder="Enter custom step name..."
+                           value="@(isCustom? selected.StepName: "")"
+                           style="@(isCustom ? "" : "display:none")" data-custom-step-edit />
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                    <label class="form-label" for="wfEditOwner">Owner</label>
+                    <select class="select" id="wfEditOwner" name="owner">
+                        <option value="">Select owner...</option>
+                        @foreach (var u in users)
+                        {
+                            <option value="@u.FullName" selected="@(u.FullName == selected.Owner)">@u.FullName</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                    <label class="form-label" for="wfEditDate">Start Date</label>
+                    <input class="input" id="wfEditDate" name="startDate" type="date"
+                           value="@(selected.StartDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <svg class="icon icon-sm"><use href="#icon-save"></use></svg>
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+}
+
+<!-- ===== WORKFLOW LIST ===== -->
+@if (steps.Any())
+{
+    <div class="wf-list" style="max-width:700px" data-workflow-list>
+        <!-- Header -->
+        <div class="wf-list-header">
+            <div class="wf-col-drag"></div>
+            <div class="wf-col-complete">Done</div>
+            <div class="wf-col-item">Item</div>
+            <div class="wf-col-owner">Owner</div>
+            <div class="wf-col-delete"></div>
+        </div>
+
+        @foreach (var step in steps)
+        {
+            <div class="wf-list-row @(selected?.Id == step.Id ? "selected" : "")"
+                 data-wf-id="@step.Id"
+                 data-href="/Candidate/Workflow?stepId=@step.Id">
+                <div class="wf-col-drag">
+                    <svg class="icon icon-sm"><use href="#icon-grip"></use></svg>
+                </div>
+                <div class="wf-col-complete">
+                    <form method="post" asp-action="ToggleWorkflowComplete">
+                        <input type="hidden" name="id" value="@step.Id" />
+                        <input type="hidden" name="complete" value="@(!step.Complete ? "true" : "false")" />
+                        <input class="check-input" type="checkbox"
+                               @(step.Complete ? "checked" : "")
+                               data-toggle-complete />
+                    </form>
+                </div>
+                <div class="wf-col-item">@step.StepName</div>
+                <div class="wf-col-owner">@step.Owner</div>
+                <div class="wf-col-delete">
+                    <button class="btn-icon" title="Delete"
+                            data-delete-step
+                            data-delete-id="@step.Id"
+                            data-delete-name="@step.StepName">
+                        <svg class="icon icon-sm"><use href="#icon-delete"></use></svg>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div style="max-width:700px;padding:var(--space-xxl);text-align:center;color:var(--text-tertiary);font-size:var(--font-sm);">
+        No workflow steps yet. Add a step above or click <strong>Add All</strong> to load the template.
+    </div>
+}

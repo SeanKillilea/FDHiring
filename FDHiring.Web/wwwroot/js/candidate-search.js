@@ -1,192 +1,163 @@
-ï»¿if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-} else {
-    init();
-}
+/* =============================================
+   Candidate search — as-you-type with debounce
+   Templates cloned from <template> elements
+   ============================================= */
+import { debounce } from './site.js';
+
+// DOM refs
+const searchInput = document.querySelector('[data-search-input]');
+const activeSelect = document.querySelector('[data-search-active]');
+const currentCheck = document.querySelector('[data-search-current]');
+const wouldHireCheck = document.querySelector('[data-search-wouldhire]');
+const resultCount = document.querySelector('[data-search-results]');
+const candidateList = document.querySelector('[data-candidate-list]');
+
+// Template cache
+const tplCompact = document.querySelector('[data-tpl="compact-card"]');
+const tplActive = document.querySelector('[data-tpl="active-card"]');
+const tplEmpty = document.querySelector('[data-tpl="empty-card"]');
+
+if (searchInput) init();
 
 function init() {
-    const userLogin = document.querySelector('[data-user-login]');
-    const searchName = document.querySelector('[data-search-name]');
-    const searchPosition = document.querySelector('[data-search-position]');
-    const searchCurrent = document.querySelector('[data-search-current]');
-    const searchActive = document.querySelector('[data-search-active]');
-    const clearBtn = document.querySelector('[data-search-clear]');
-    const resultsContainer = document.querySelector('[data-candidate-results]');
-    const showingCount = document.querySelector('[data-search-showing]');
-    const totalCount = document.querySelector('[data-search-total]');
-
-    let debounceTimer;
-
-    // User login change
-    userLogin?.addEventListener('change', async (e) => {
-        await fetch('/Candidate/SetUser', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `userId=${e.target.value}`
-        });
-    });
-
-    // Search on input/change with debounce for text
-    searchName?.addEventListener('input', () => {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(search, 300);
-    });
-
-    searchPosition?.addEventListener('change', search);
-    searchCurrent?.addEventListener('change', search);
-    searchActive?.addEventListener('change', search);
-
-    // Clear filters
-    clearBtn?.addEventListener('click', () => {
-        searchName.value = '';
-        searchPosition.value = '';
-        searchCurrent.checked = false;
-        searchActive.checked = false;
-        search();
-    });
-
-    const selectedCandidateId = resultsContainer?.dataset.selectedCandidate;
-
-    // Initial search on page load
+    const run = debounce(search, 300);
+    searchInput.addEventListener('input', run);
+    activeSelect.addEventListener('change', run);
+    currentCheck.addEventListener('change', run);
+    wouldHireCheck.addEventListener('change', run);
     search();
+}
 
-    async function search() {
-        const params = new URLSearchParams();
+// ===== SEARCH =====
 
-        if (searchName?.value) params.append('name', searchName.value);
-        if (searchPosition?.value) params.append('positionId', searchPosition.value);
-        if (searchCurrent?.checked) params.append('current', 'true');
-        if (searchActive?.checked) params.append('active', 'true');
+async function search() {
+    const params = new URLSearchParams();
+    const name = searchInput.value.trim();
+    if (name) params.set('name', name);
+    if (activeSelect.value !== '') params.set('active', activeSelect.value);
+    if (currentCheck.checked) params.set('current', 'true');
+    if (wouldHireCheck.checked) params.set('wouldHire', 'true');
 
-        // Save search state to session
-        saveSearchState();
+    try {
+        const res = await fetch(`/Candidate/SearchJson?${params}`);
+        const data = await res.json();
+        resultCount.textContent = `Results ${data.results.length} of ${data.total}`;
+        renderList(data.results);
+    } catch (err) {
+        console.error('Search failed:', err);
+    }
+}
 
-        try {
-            const res = await fetch(`/Candidate/SearchCandidates?${params}`);
-            const data = await res.json();
+// ===== RENDER LIST =====
 
-            showingCount.textContent = data.showing;
-            totalCount.textContent = data.total;
+function renderList(candidates) {
+    candidateList.innerHTML = '';
+    const activeCard = document.querySelector('[data-active-candidate]');
+    const selectedId = parseInt(activeCard?.dataset.candidateId || '0', 10);
 
-            renderCandidates(data.candidates);
-        } catch (err) {
-            console.error('Search failed:', err);
+    candidates.forEach(c => {
+        const card = tplCompact.content.cloneNode(true).firstElementChild;
+
+        card.dataset.candidateId = c.id;
+        if (c.id === selectedId) card.classList.add('selected');
+
+        fillCard(card, c);
+        fillBadges(card, c);
+
+        const notes = card.querySelector('[data-field="notes"]');
+        if (notes) notes.textContent = c.notes || '';
+
+        card.addEventListener('click', () => selectCandidate(c));
+        candidateList.appendChild(card);
+    });
+}
+
+// ===== SELECT CANDIDATE =====
+
+async function selectCandidate(c) {
+    try {
+        const res = await fetch(`/Candidate/SetCandidate?id=${c.id}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        if (!res.ok) throw new Error('SetCandidate failed');
+
+        renderActiveCard(c);
+
+        candidateList.querySelectorAll('.candidate-card-compact').forEach(el => {
+            el.classList.toggle('selected', parseInt(el.dataset.candidateId, 10) === c.id);
+        });
+    } catch (err) {
+        console.error('Failed to select candidate:', err);
+    }
+}
+
+// ===== RENDER ACTIVE CARD =====
+
+function renderActiveCard(c) {
+    const current = document.querySelector('[data-active-candidate]');
+    const card = tplActive.content.cloneNode(true).firstElementChild;
+
+    card.dataset.candidateId = c.id;
+    fillCard(card, c);
+    fillBadges(card, c);
+
+    const editLink = card.querySelector('[data-field="edit-link"]');
+    if (editLink) editLink.href = `/Candidate/Edit/${c.id}`;
+
+    current.replaceWith(card);
+}
+
+function renderEmptyCard() {
+    const current = document.querySelector('[data-active-candidate]');
+    const card = tplEmpty.content.cloneNode(true).firstElementChild;
+    current.replaceWith(card);
+}
+
+// ===== SHARED HELPERS =====
+
+function fillCard(card, c) {
+    const name = card.querySelector('[data-field="name"]');
+    const position = card.querySelector('[data-field="position"]');
+    const email = card.querySelector('[data-field="email"]');
+    const phone = card.querySelector('[data-field="phone"]');
+    const linkedin = card.querySelector('[data-field="linkedin"]');
+    const photo = card.querySelector('[data-field="photo"]');
+
+    if (name) name.textContent = `${c.firstName} ${c.lastName}`;
+    if (position) position.textContent = c.positionName || '';
+    if (email) email.textContent = c.email || '';
+    if (phone) phone.textContent = c.phone || '';
+    if (linkedin) linkedin.textContent = c.linkedIn || '';
+
+    if (photo) {
+        if (c.photoPath) {
+            photo.innerHTML = `<img src="${c.photoPath}" alt="${c.firstName} ${c.lastName}" />`;
+        } else {
+            photo.innerHTML = `
+                <div style="width:100%;height:100%;display:grid;place-items:center;background:var(--clr-surface-3)">
+                    <svg class="icon icon-xl" style="color:var(--text-tertiary)"><use href="#icon-user"></use></svg>
+                </div>`;
         }
     }
+}
 
-    function renderCandidates(candidates) {
-        if (!candidates || candidates.length === 0) {
-            resultsContainer.innerHTML = '<p class="text-muted">No candidates found.</p>';
-            return;
-        }
+function fillBadges(card, c) {
+    const badgeActive = card.querySelector('[data-field="badge-active"]');
+    const badgeWould = card.querySelector('[data-field="badge-wouldhire"]');
+    const badgeCurrent = card.querySelector('[data-field="badge-current"]');
 
-        resultsContainer.innerHTML = candidates.map(c => `
-            <div class="card" data-candidate-id="${c.id}">
-                <div class="image">
-                    <img class="search-bg" src="${c.imagePath || '/images/default-avatar.png'}" alt="${c.firstName} ${c.lastName}" />
-                </div>
-                <div class="section">
-                    <div class="candidate-name">${c.firstName} ${c.lastName}</div>
-                    <div class="candidate-position">${c.positionName || ''}</div>
-                </div>
-                <div class="section">
-                    <div>${c.phone || ''}</div>
-                    <div>${c.email || ''}</div>
-                </div>
-                <div class="section primary">
-                    <div>${c.notes || ''}</div>
-                </div>
-                <div class="section">
-                    ${c.wouldHire ? '<span class="pill medium would-hire">Would Hire</span>' : ''}
-                    ${c.isCurrent ? '<span class="pill medium current">Current</span>' : ''}
-                    ${c.active ? '<span class="pill medium active">Active</span>' : ''}
-                </div>
-            </div>
-        `).join('');
+    setBadge(badgeActive, c.active, 'badge-success', 'Active');
+    setBadge(badgeWould, c.wouldHire, 'badge-info', 'Would Hire');
+    setBadge(badgeCurrent, c.isCurrent, 'badge-accent', 'Current');
+}
 
-        // Click card to select candidate
-        resultsContainer.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('click', () => {
-                resultsContainer.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                selectCandidate(card.dataset.candidateId);
-            });
-        });
-
-        // Highlight selected candidate from session
-        if (selectedCandidateId && selectedCandidateId !== '0') {
-            const selected = resultsContainer.querySelector(`[data-candidate-id="${selectedCandidateId}"]`);
-            if (selected) {
-                selected.classList.add('active');
-                selected.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-    }
-
-    async function selectCandidate(id) {
-        await fetch('/Candidate/SetCandidate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `candidateId=${id}`
-        });
-
-        // Update the candidate header
-        const header = document.querySelector('[data-candidate-header]');
-        if (header) {
-            header.classList.remove('hidden');
-            header.dataset.candidateId = id;
-
-            // Update edit link
-            const editBtn = header.querySelector('[data-btn-edit]');
-            if (editBtn) editBtn.href = `/Candidate/Edit/${id}`;
-
-            loadCandidateHeader(id, header);
-        }
-
-        // Enable sidebar buttons
-        enableSidebar(id);
-    }
-
-    function enableSidebar(id) {
-        const sidebar = document.querySelector('.side-action-buttons');
-        if (!sidebar) return;
-
-        // Replace disabled spans with active links
-        const disabledButtons = sidebar.querySelectorAll('span.btn.action.disabled');
-        if (disabledButtons.length === 0) return;
-
-        const buttonConfig = [
-            { title: 'Edit Candidate', href: `/Candidate/Edit/${id}` },
-            { title: 'Workflow', href: `/Candidate/Workflow/${id}` },
-            { title: 'Interviews', href: `/Candidate/Interview/${id}` },
-            { title: 'Files', href: `/Candidate/Files/${id}` },
-            { title: 'Communicate', href: `/Candidate/Communicate/${id}` }
-        ];
-
-        disabledButtons.forEach((span, index) => {
-            const config = buttonConfig[index];
-            if (!config) return;
-
-            const link = document.createElement('a');
-            link.href = config.href;
-            link.className = 'btn action';
-            link.title = config.title;
-            link.innerHTML = span.innerHTML;
-            span.replaceWith(link);
-        });
-    }
-
-    async function saveSearchState() {
-        const params = new URLSearchParams();
-        params.append('name', searchName?.value || '');
-        params.append('positionId', searchPosition?.value || '0');
-        params.append('current', searchCurrent?.checked ? 'true' : 'false');
-        params.append('active', searchActive?.checked ? 'true' : 'false');
-
-        await fetch('/Candidate/SaveSearchState', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: params.toString()
-        });
+function setBadge(el, value, cls, label) {
+    if (!el) return;
+    if (value) {
+        el.className = `badge ${cls} badge-dot`;
+        el.textContent = label;
+    } else {
+        el.className = 'badge badge-empty';
+        el.innerHTML = '&nbsp;';
     }
 }

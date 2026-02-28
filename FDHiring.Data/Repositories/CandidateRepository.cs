@@ -13,16 +13,18 @@ namespace FDHiring.Data.Repositories
             _db = db;
         }
 
-        public async Task<IEnumerable<Candidate>> GetAllAsync()
+        public async Task<IEnumerable<Candidate>> SearchAsync(string? search, int? positionId, int? agencyId, bool? active, bool? isCurrent, bool? wouldHire)
         {
             using var conn = _db.CreateConnection();
-            return await conn.QueryAsync<Candidate>("GetAllCandidates", commandType: CommandType.StoredProcedure);
-        }
-
-        public async Task<IEnumerable<Candidate>> GetActiveAsync()
-        {
-            using var conn = _db.CreateConnection();
-            return await conn.QueryAsync<Candidate>("GetActiveCandidates", commandType: CommandType.StoredProcedure);
+            return await conn.QueryAsync<Candidate>("SearchCandidates", new
+            {
+                Search = search,
+                PositionId = positionId,
+                AgencyId = agencyId,
+                Active = active,
+                IsCurrent = isCurrent,
+                WouldHire = wouldHire
+            }, commandType: CommandType.StoredProcedure);
         }
 
         public async Task<Candidate?> GetByIdAsync(int id)
@@ -30,38 +32,6 @@ namespace FDHiring.Data.Repositories
             using var conn = _db.CreateConnection();
             return await conn.QueryFirstOrDefaultAsync<Candidate>("GetCandidateById",
                 new { Id = id }, commandType: CommandType.StoredProcedure);
-        }
-
-        public async Task<IEnumerable<Candidate>> GetByPositionAsync(int positionId)
-        {
-            using var conn = _db.CreateConnection();
-            return await conn.QueryAsync<Candidate>("GetCandidatesByPosition",
-                new { PositionId = positionId }, commandType: CommandType.StoredProcedure);
-        }
-
-        public async Task<IEnumerable<Candidate>> GetByAgencyAsync(int agencyId)
-        {
-            using var conn = _db.CreateConnection();
-            return await conn.QueryAsync<Candidate>("GetCandidatesByAgency",
-                new { AgencyId = agencyId }, commandType: CommandType.StoredProcedure);
-        }
-
-        public async Task<IEnumerable<Candidate>> SearchAsync(string? name, int? positionId, bool? current, bool? active)
-        {
-            using var conn = _db.CreateConnection();
-            return await conn.QueryAsync<Candidate>("SearchCandidates", new
-            {
-                Name = string.IsNullOrWhiteSpace(name) ? null : name,
-                PositionId = positionId > 0 ? positionId : null,
-                IsCurrent = current == true ? (bool?)true : null,
-                Active = active == true ? (bool?)true : null
-            }, commandType: CommandType.StoredProcedure);
-        }
-
-        public async Task<int> GetCountAsync()
-        {
-            using var conn = _db.CreateConnection();
-            return await conn.ExecuteScalarAsync<int>("GetCandidateCount", commandType: CommandType.StoredProcedure);
         }
 
         public async Task<int> InsertAsync(Candidate c)
@@ -74,7 +44,6 @@ namespace FDHiring.Data.Repositories
                 c.Email,
                 c.Phone,
                 c.LinkedIn,
-                c.ImagePath,
                 c.PositionId,
                 c.AgencyId,
                 c.DateFound,
@@ -97,7 +66,6 @@ namespace FDHiring.Data.Repositories
                 c.Email,
                 c.Phone,
                 c.LinkedIn,
-                c.ImagePath,
                 c.PositionId,
                 c.AgencyId,
                 c.DateFound,

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FDHiring.Core.Models
 {
@@ -11,12 +7,14 @@ namespace FDHiring.Core.Models
         public int Id { get; set; }
         public int CandidateId { get; set; }
         public int PositionId { get; set; }
-        public int CurrentStepId { get; set; }
-        public DateTime StartDate { get; set; }
-        public bool Active { get; set; }
+        public DateTime? StartDate { get; set; }
+        public string? Owner { get; set; }
+        public string? StepName { get; set; }
+        public int StepOrder { get; set; }
+        public bool Complete { get; set; }
 
         // Joined fields
-        public string? CurrentStepName { get; set; }
-        public int? CurrentStepOrder { get; set; }
+        public string? CandidateName { get; set; }
+        public string? PositionName { get; set; }
     }
 }

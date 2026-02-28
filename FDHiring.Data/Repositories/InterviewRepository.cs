@@ -13,11 +13,12 @@ namespace FDHiring.Data.Repositories
             _db = db;
         }
 
-        public async Task<IEnumerable<Interview>> GetByCandidateIdAsync(int candidateId)
+        public async Task<IEnumerable<Interview>> GetByCandidateAndPositionAsync(int candidateId, int positionId)
         {
             using var conn = _db.CreateConnection();
-            return await conn.QueryAsync<Interview>("GetInterviewsByCandidateId",
-                new { CandidateId = candidateId }, commandType: CommandType.StoredProcedure);
+            return await conn.QueryAsync<Interview>("GetInterviewsByCandidateAndPosition",
+                new { CandidateId = candidateId, PositionId = positionId },
+                commandType: CommandType.StoredProcedure);
         }
 
         public async Task<Interview?> GetByIdAsync(int id)
@@ -33,11 +34,11 @@ namespace FDHiring.Data.Repositories
             return await conn.ExecuteScalarAsync<int>("InsertInterview", new
             {
                 i.CandidateId,
-                i.WorkflowId,
-                i.InterviewNumber,
-                i.InterviewedByUserId,
+                i.PositionId,
+                i.InterviewTypeId,
+                i.Owner,
                 i.ScheduledDate,
-                i.Status,
+                i.CandidateGo,
                 i.Notes
             }, commandType: CommandType.StoredProcedure);
         }
@@ -48,12 +49,20 @@ namespace FDHiring.Data.Repositories
             await conn.ExecuteAsync("UpdateInterview", new
             {
                 i.Id,
-                i.InterviewedByUserId,
+                i.InterviewTypeId,
+                i.Owner,
                 i.ScheduledDate,
-                i.CompletedDate,
-                i.Status,
+                i.CandidateGo,
                 i.Notes
             }, commandType: CommandType.StoredProcedure);
+        }
+
+        public async Task ToggleGoAsync(int id, bool candidateGo)
+        {
+            using var conn = _db.CreateConnection();
+            await conn.ExecuteAsync("ToggleInterviewGo",
+                new { Id = id, CandidateGo = candidateGo },
+                commandType: CommandType.StoredProcedure);
         }
 
         public async Task DeleteAsync(int id)
@@ -61,6 +70,14 @@ namespace FDHiring.Data.Repositories
             using var conn = _db.CreateConnection();
             await conn.ExecuteAsync("DeleteInterview",
                 new { Id = id }, commandType: CommandType.StoredProcedure);
+        }
+
+        public async Task DeleteByCandidateAndPositionAsync(int candidateId, int positionId)
+        {
+            using var conn = _db.CreateConnection();
+            await conn.ExecuteAsync("DeleteInterviewsByCandidateAndPosition",
+                new { CandidateId = candidateId, PositionId = positionId },
+                commandType: CommandType.StoredProcedure);
         }
     }
 }

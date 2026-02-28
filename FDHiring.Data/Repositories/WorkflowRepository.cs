@@ -13,13 +13,16 @@ namespace FDHiring.Data.Repositories
             _db = db;
         }
 
-        public async Task<Workflow?> GetByCandidateIdAsync(int candidateId)
+        // Get all workflow steps for a candidate+position combo
+        public async Task<IEnumerable<Workflow>> GetByCandidateAndPositionAsync(int candidateId, int positionId)
         {
             using var conn = _db.CreateConnection();
-            return await conn.QueryFirstOrDefaultAsync<Workflow>("GetWorkflowByCandidateId",
-                new { CandidateId = candidateId }, commandType: CommandType.StoredProcedure);
+            return await conn.QueryAsync<Workflow>("GetWorkflowByCandidateAndPosition",
+                new { CandidateId = candidateId, PositionId = positionId },
+                commandType: CommandType.StoredProcedure);
         }
 
+        // Get a single workflow step by Id
         public async Task<Workflow?> GetByIdAsync(int id)
         {
             using var conn = _db.CreateConnection();
@@ -27,12 +30,7 @@ namespace FDHiring.Data.Repositories
                 new { Id = id }, commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<IEnumerable<Workflow>> GetActiveAsync()
-        {
-            using var conn = _db.CreateConnection();
-            return await conn.QueryAsync<Workflow>("GetActiveWorkflows", commandType: CommandType.StoredProcedure);
-        }
-
+        // Insert a single workflow step
         public async Task<int> InsertAsync(Workflow w)
         {
             using var conn = _db.CreateConnection();
@@ -40,22 +38,71 @@ namespace FDHiring.Data.Repositories
             {
                 w.CandidateId,
                 w.PositionId,
-                w.CurrentStepId
+                w.StartDate,
+                w.Owner,
+                w.StepName,
+                w.StepOrder,
+                w.Complete
             }, commandType: CommandType.StoredProcedure);
         }
 
-        public async Task UpdateStepAsync(int id, int currentStepId)
+        // Add all template steps from WorkflowSteps for a position
+        public async Task InsertAllStepsForPositionAsync(int candidateId, int positionId)
         {
             using var conn = _db.CreateConnection();
-            await conn.ExecuteAsync("UpdateWorkflowStep",
-                new { Id = id, CurrentStepId = currentStepId }, commandType: CommandType.StoredProcedure);
+            await conn.ExecuteAsync("InsertAllWorkflowStepsForPosition",
+                new { CandidateId = candidateId, PositionId = positionId },
+                commandType: CommandType.StoredProcedure);
         }
 
-        public async Task DeactivateAsync(int id)
+        // Toggle complete flag on a step
+        public async Task ToggleCompleteAsync(int id, bool complete)
         {
             using var conn = _db.CreateConnection();
-            await conn.ExecuteAsync("DeactivateWorkflow",
+            await conn.ExecuteAsync("ToggleWorkflowComplete",
+                new { Id = id, Complete = complete },
+                commandType: CommandType.StoredProcedure);
+        }
+
+        // Update a workflow step (owner, start date, step name, order)
+        public async Task UpdateAsync(Workflow w)
+        {
+            using var conn = _db.CreateConnection();
+            await conn.ExecuteAsync("UpdateWorkflow", new
+            {
+                w.Id,
+                w.StartDate,
+                w.Owner,
+                w.StepName,
+                w.StepOrder,
+                w.Complete
+            }, commandType: CommandType.StoredProcedure);
+        }
+
+        // Delete a single workflow step
+        public async Task DeleteAsync(int id)
+        {
+            using var conn = _db.CreateConnection();
+            await conn.ExecuteAsync("DeleteWorkflow",
                 new { Id = id }, commandType: CommandType.StoredProcedure);
+        }
+
+        // Delete all workflow steps for a candidate+position
+        public async Task DeleteByCandidateAndPositionAsync(int candidateId, int positionId)
+        {
+            using var conn = _db.CreateConnection();
+            await conn.ExecuteAsync("DeleteWorkflowByCandidateAndPosition",
+                new { CandidateId = candidateId, PositionId = positionId },
+                commandType: CommandType.StoredProcedure);
+        }
+
+
+        public async Task UpdateStepOrderAsync(int id, int stepOrder)
+        {
+            using var conn = _db.CreateConnection();
+            await conn.ExecuteAsync("UpdateWorkflowStepOrder",
+                new { Id = id, StepOrder = stepOrder },
+                commandType: CommandType.StoredProcedure);
         }
     }
 }

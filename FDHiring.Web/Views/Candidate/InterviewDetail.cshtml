@@ -1,0 +1,135 @@
+﻿@using FDHiring.Core.Models
+@{
+    var candidateId = ViewData["CandidateId"] as int?;
+    var candidate = ViewData["Candidate"] as Candidate;
+    var interview = ViewData["Interview"] as Interview;
+    var answers = ViewData["Answers"] as List<InterviewAnswer> ?? new List<InterviewAnswer>();
+}
+
+@section Scripts {
+    <script type="module" src="~/js/candidate-interview-detail.js"></script>
+}
+
+<a asp-action="Interviews" class="btn btn-ghost mb-lg">
+    <svg class="icon icon-sm"><use href="#icon-arrow-left"></use></svg>
+    Back to Interviews
+</a>
+
+<!-- Candidate Card -->
+@await Html.PartialAsync("_ActiveCandidate")
+
+@if (candidate == null || interview == null)
+{
+    return;
+}
+
+<div style="max-width:700px">
+    <!-- ===== INTERVIEW INFO + SAVE ALL FORM ===== -->
+    <form method="post" asp-action="UpdateInterviewDetail" novalidate data-detail-form>
+        <input type="hidden" name="interviewId" value="@interview.Id" />
+
+        <div class="workflow-add mb-lg">
+            <div class="section-subtitle mb-sm">Interview Information</div>
+            <div class="form-row mb-sm">
+                <div class="form-group" style="margin-bottom:0">
+                    <label class="form-label">Interviewer</label>
+                    <div class="iv-detail-value">@interview.Owner</div>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                    <label class="form-label">Type</label>
+                    <div class="iv-detail-value">@interview.InterviewTypeName</div>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                    <label class="form-label">Scheduled</label>
+                    <div class="iv-detail-value">@(interview.ScheduledDate?.ToString("M/d/yyyy") ?? "—")</div>
+                </div>
+            </div>
+            <div class="form-row" style="align-items:flex-end">
+                <div class="form-group" style="margin-bottom:0;flex:0 0 auto">
+                    <label class="check-label">
+                        <input class="check-input" type="checkbox" name="candidateGo" value="true"
+                               @(interview.CandidateGo ? "checked" : "") />
+                        Go
+                    </label>
+                </div>
+                <div class="form-group" style="margin-bottom:0;flex:1">
+                    <label class="form-label" for="ivDetailNotes">Notes</label>
+                    <textarea class="textarea" id="ivDetailNotes" name="notes"
+                              placeholder="Interview notes..." >@interview.Notes</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <svg class="icon icon-sm"><use href="#icon-save"></use></svg>
+                    Save
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== QUESTIONS / ANSWERS ===== -->
+        @if (answers.Any())
+        {
+            <div class="qa-list mb-lg" data-qa-list>
+                @{
+                    var idx = 0;
+                }
+                @foreach (var a in answers)
+                {
+                    idx++;
+                    <div class="qa-item" data-qa-id="@a.Id">
+                        <div class="qa-handle">
+                            <svg class="icon icon-sm"><use href="#icon-grip"></use></svg>
+                        </div>
+                        <div class="qa-body">
+                            <div class="qa-header">
+                                <span class="qa-number">@idx</span>
+                                <div class="qa-question">@a.Question</div>
+                                <button type="button" class="btn-icon" title="Delete question"
+                                        data-delete-answer
+                                        data-delete-id="@a.Id"
+                                        data-delete-interview="@interview.Id"
+                                        data-delete-name="Question @idx">
+                                    <svg class="icon icon-sm"><use href="#icon-delete"></use></svg>
+                                </button>
+                            </div>
+                            <input type="hidden" name="answerIds" value="@a.Id" />
+                            <textarea class="textarea qa-answer" name="answers"
+                              placeholder="Record answer...">@a.Answer</textarea>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div style="padding:var(--space-xxl);text-align:center;color:var(--text-tertiary);font-size:var(--font-sm);" class="mb-lg">
+                No questions loaded for this interview type.
+            </div>
+        }
+    </form>
+
+    <!-- ===== ADD QUESTION ===== -->
+    <div class="workflow-add mb-lg">
+        <form method="post" asp-action="AddInterviewQuestion" novalidate data-add-question-form>
+            <input type="hidden" name="interviewId" value="@interview.Id" />
+            <div class="form-row" style="align-items:flex-end">
+                <div class="form-group" style="margin-bottom:0;flex:1">
+                    <label class="form-label" for="ivAddQuestion">Add Question</label>
+                    <input class="input" id="ivAddQuestion" name="question" type="text"
+                           placeholder="Type a question..." data-required="Question" />
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <svg class="icon icon-sm"><use href="#icon-add"></use></svg>
+                    Add
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bottom actions -->
+    <div class="form-actions">
+        <a asp-action="Interviews" class="btn">Back to Interviews</a>
+        <button type="submit" form="detailFormSubmit" class="btn btn-primary" data-save-all>
+            <svg class="icon icon-sm"><use href="#icon-save"></use></svg>
+            Save All
+        </button>
+    </div>
+</div>
